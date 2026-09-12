@@ -15,6 +15,7 @@ model Tenant {
   createdAt   DateTime   @default(now())
   offers      Offer[]
   campaigns   Campaign[]
+  leads       Lead[]
 }
 
 // 2. Offer Engine (Qué vende la empresa)
@@ -45,4 +46,24 @@ model Campaign {
 
   tenant      Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   offer       Offer      @relation(fields: [offerId], references: [id], onDelete: Cascade)
+  leads       Lead[]
+}
+
+// 4. Lead Scoring & Opportunity Engine
+model Lead {
+  id           String    @id @default(uuid())
+  tenantId     String
+  campaignId   String?
+  companyName  String
+  contactEmail String
+  city         String
+  industry     String
+  budget       Float?
+  score        Int       @default(0)
+  priority     String    @default("LOW") // CRITICAL_HOT, HIGH, MEDIUM, LOW
+  status       String    @default("DETECTED") // DETECTED, CONTACTED, QUALIFIED, WON, LOST
+  createdAt    DateTime  @default(now())
+
+  tenant       Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  campaign     Campaign? @relation(fields: [campaignId], references: [id], onDelete: SetNull)
 }
