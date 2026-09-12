@@ -1,548 +1,237 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cotizar Evento | Gran Royal Producciones</title>
-    
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <style>
-        :root {
-            --gold: #C9A84C;
-            --gold-light: #F1D592;
-            --black: #050505;
-            --dark-gray: #0d0d0d;
-            --white: #ffffff;
-            --border: rgba(201,168,76,0.25);
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cotizar Evento VIP — Gran Royal Producciones</title>
+  
+  <!-- Favicon Dorado Gran Royal SVG -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23050505'/><path d='M20 70 L50 25 L80 70 L65 70 L50 45 L35 70 Z' fill='%23D4AF37'/><circle cx='50' cy='22' r='6' fill='%23F3E5AB'/></svg>">
 
-        *, *::before, *::after {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <!-- SEO Local y Metadatos para Google (Costo $0) -->
+  <meta name="description" content="Gran Royal Producciones: Productora líder en matrimonios, graduaciones y eventos corporativos en Viña del Mar, Valparaíso y Concón. Salones exclusivos, banquetería de alta gama y técnica integral.">
+  <meta name="keywords" content="productora de eventos viña del mar, matrimonios viña del mar, graduaciones valparaiso, banqueteria concon, eventos corporativos v region">
+  <meta property="og:title" content="Gran Royal Producciones — Eventos de Alta Gama en la V Región">
+  <meta property="og:description" content="Cotiza tu matrimonio, fiesta de graduación o evento corporativo en salones exclusivos de Viña del Mar y Valparaíso con Patricio (+56 9 8137 7642).">
+  <meta property="og:type" content="website">
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--black);
-            color: var(--white);
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
+  <!-- Microdatos JSON-LD Schema.org para Google Search & Maps -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "Gran Royal Producciones",
+    "telephone": "+56981377642",
+    "email": "contacto@granroyal.cl",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Viña del Mar",
+      "addressRegion": "Valparaíso",
+      "addressCountry": "CL"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": -33.0245,
+      "longitude": -71.5518
+    },
+    "url": "http://localhost:4000/cotizar/gran-royal",
+    "priceRange": "$$$",
+    "areaServed": ["Viña del Mar", "Valparaíso", "Concón", "Quilpué", "Reñaca"],
+    "sameAs": [
+      "https://www.instagram.com/granroyalproducciones"
+    ]
+  }
+  </script>
 
-        h1, h2, h3, h4, .cursiva-dorada, .btn-gold, .float-cotizar {
-            font-family: 'Playfair Display', serif !important;
-            font-style: italic !important;
-            letter-spacing: 1px !important;
-        }
+  <!-- Tipografía Playfair Display y Tailwind -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
 
-        .cursiva-dorada {
-            color: var(--gold) !important;
-            display: block;
-        }
-
-        /* HEADER ELEGANTE */
-        .header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 90px;
-            background: rgba(0, 0, 0, 0.95);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--border);
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 30px;
-            width: 100%;
-        }
-
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo-text {
-            font-family: 'Playfair Display', serif;
-            font-size: 26px;
-            font-style: italic;
-            font-weight: 700;
-            color: var(--gold);
-            text-decoration: none;
-            letter-spacing: 2px;
-        }
-
-        .header-badge {
-            font-size: 11px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: #aaa;
-            border: 1px solid var(--border);
-            padding: 6px 14px;
-            border-radius: 50px;
-            background: rgba(201, 168, 76, 0.05);
-        }
-
-        /* HERO SECTION */
-        .hero-section {
-            margin-top: 90px;
-            padding: 80px 20px 40px;
-            text-align: center;
-            background: linear-gradient(rgba(5,5,5,0.75), rgba(5,5,5,0.95)), url('https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .section-label {
-            font-size: 11px;
-            letter-spacing: 6px;
-            color: var(--gold);
-            text-transform: uppercase;
-            display: block;
-            margin-bottom: 15px;
-            font-weight: 600;
-        }
-
-        .hero-section h1 {
-            font-size: clamp(2.5rem, 5vw, 4rem);
-            color: #fff;
-            margin-bottom: 15px;
-            line-height: 1.1;
-        }
-
-        .hero-section h1 em {
-            color: var(--gold);
-            font-style: italic;
-        }
-
-        .hero-section p {
-            color: #aaa;
-            font-size: 16px;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        /* FORMULARIO COTIZAR */
-        .form-container {
-            padding: 70px 20px 100px;
-        }
-
-        .cotizar-card {
-            max-width: 850px;
-            margin: 0 auto;
-            background: var(--dark-gray);
-            border: 1px solid var(--border);
-            padding: 50px;
-            box-shadow: 0 40px 100px rgba(0,0,0,0.8);
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 25px;
-            margin-bottom: 25px;
-        }
-
-        .form-field {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .form-field label {
-            font-size: 11px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: var(--gold);
-            margin-bottom: 10px;
-            font-weight: bold;
-        }
-
-        .form-field input, .form-field select, .form-field textarea {
-            background: #000;
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 16px;
-            color: #fff;
-            font-family: inherit;
-            outline: none;
-            transition: border-color 0.3s;
-            font-size: 14px;
-        }
-
-        .form-field input:focus, .form-field select:focus, .form-field textarea:focus {
-            border-color: var(--gold);
-        }
-
-        /* BOTÓN GOLD CON PULSO */
-        @keyframes pulse-gold {
-            0% { box-shadow: 0 0 0 0 rgba(201,168,76,0.6); }
-            70% { box-shadow: 0 0 0 15px rgba(201,168,76,0); }
-            100% { box-shadow: 0 0 0 0 rgba(201,168,76,0); }
-        }
-
-        .btn-gold {
-            background-color: var(--gold);
-            color: var(--black);
-            padding: 20px 30px;
-            font-size: 16px !important;
-            font-weight: 700 !important;
-            text-transform: none !important;
-            letter-spacing: 2px !important;
-            border: none;
-            cursor: pointer;
-            width: 100%;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            animation: pulse-gold 2s infinite;
-            display: block;
-            text-align: center;
-        }
-
-        .btn-gold:hover {
-            background-color: #fff;
-            color: #000;
-        }
-
-        /* FOOTER RESTAURADO */
-        .footer {
-            background: #050505;
-            padding: 80px 0 40px;
-            border-top: 1px solid var(--border);
-        }
-
-        .footer-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 60px;
-            align-items: start;
-        }
-
-        .footer-section h3 {
-            color: var(--gold);
-            margin-bottom: 25px;
-            font-size: 18px;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-        }
-
-        .footer-contact {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .contact-item-label {
-            display: block;
-            font-size: 10px;
-            color: #666;
-            letter-spacing: 2px;
-            margin-bottom: 4px;
-        }
-
-        .contact-item-text a {
-            color: #fff;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 16px;
-        }
-
-        .social-row {
-            display: flex;
-            gap: 10px;
-            width: 100%;
-            margin-top: 15px;
-        }
-
-        .wa-btn {
-            background-color: #25D366;
-            color: #fff;
-            flex: 1;
-            padding: 12px;
-            text-align: center;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 11px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            font-family: 'Playfair Display', serif !important;
-            font-style: italic !important;
-        }
-
-        .instagram-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            background-color: rgba(201,168,76,0.05);
-            border: 1px solid var(--gold);
-            color: var(--gold);
-            text-decoration: none;
-            padding: 12px 20px;
-            font-size: 12px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            width: 100%;
-        }
-
-        .footer-bottom {
-            text-align: center;
-            margin-top: 50px;
-            padding-top: 25px;
-            border-top: 1px solid rgba(255,255,255,0.05);
-            color: #555;
-            font-size: 11px;
-            letter-spacing: 2px;
-        }
-
-        /* WHATSAPP FLOTANTE */
-        @keyframes pulse-wa {
-            0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.6); }
-            70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
-        }
-
-        .floating-container {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            z-index: 2000;
-        }
-
-        .float-wa {
-            width: 60px;
-            height: 60px;
-            background-color: #25D366;
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 30px;
-            text-decoration: none;
-            animation: pulse-wa 2s infinite;
-        }
-
-        @media (max-width: 768px) {
-            .form-row { grid-template-columns: 1fr; }
-            .cotizar-card { padding: 30px 20px; }
-            .footer-grid { grid-template-columns: 1fr; text-align: center; gap: 40px; }
-            .footer-section { align-items: center; }
-            .social-row { flex-direction: column; }
-        }
-    </style>
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #050505;
+    }
+    .font-serif-luxury {
+      font-family: 'Playfair Display', serif;
+    }
+    .gold-gradient {
+      background: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .gold-border {
+      border-color: rgba(212, 175, 55, 0.25);
+    }
+    .gold-glow {
+      box-shadow: 0 0 35px -5px rgba(212, 175, 55, 0.15);
+    }
+  </style>
 </head>
-<body>
+<body class="text-neutral-200 min-h-screen selection:bg-amber-500/20 selection:text-amber-200 flex flex-col justify-between">
 
-    <!-- Header Fijo -->
-    <header class="header">
-        <div class="container header-content">
-            <a href="/" class="logo-text">Gran Royal</a>
-            <span class="header-badge">Viña del Mar & Valparaíso</span>
-        </div>
-    </header>
+  <!-- Navegación Minimalista -->
+  <header class="border-b border-neutral-900/80 bg-black/60 backdrop-blur-md sticky top-0 z-50">
+    <div class="max-w-5xl mx-auto px-6 py-4 flex justify-between items-center">
+      <div class="flex items-center gap-2">
+        <span class="text-amber-400 font-serif-luxury text-xl font-bold tracking-wider">GRAN ROYAL</span>
+        <span class="text-[10px] tracking-widest text-neutral-500 uppercase border border-neutral-800 px-2 py-0.5 rounded">Producciones</span>
+      </div>
+      <a href="https://wa.me/56981377642" target="_blank" class="text-xs text-amber-300/80 hover:text-amber-300 transition flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+        Atención Directa: +56 9 8137 7642
+      </a>
+    </div>
+  </header>
 
-    <!-- Hero -->
-    <section class="hero-section">
-        <div class="container">
-            <span class="section-label">Cotización Express · Gran Royal</span>
-            <h1>Cotiza tu <em>Evento Royal</em></h1>
-            <p>Producción de alta gama para matrimonios, celebraciones corporativas y cenas exclusivas en la V Región.</p>
-        </div>
-    </section>
-
-    <!-- Formulario con estilo Gran Royal -->
-    <main class="form-container">
-        <div class="cotizar-card">
-            <div style="text-align: center; margin-bottom: 35px;">
-                <span class="cursiva-dorada" style="font-size: 28px; margin-bottom: 8px;">Hablemos de tu próximo evento</span>
-                <p style="color: #888; font-size: 14px;">Ingresa los detalles para coordinar directamente la propuesta y disponibilidad.</p>
-            </div>
-
-            <form id="royalQuoteForm" onsubmit="handleRoyalQuote(event)">
-                <div class="form-row">
-                    <div class="form-field">
-                        <label>Nombre del Solicitante o Pareja / Empresa</label>
-                        <input type="text" id="companyName" required placeholder="Ej: Valentina & Felipe / Corporación Viña">
-                    </div>
-                    <div class="form-field">
-                        <label>Correo Electrónico</label>
-                        <input type="email" id="contactEmail" required placeholder="contacto@ejemplo.cl">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-field">
-                        <label>Ciudad del Evento</label>
-                        <select id="city" required>
-                            <option value="Viña del Mar">Viña del Mar</option>
-                            <option value="Valparaíso">Valparaíso</option>
-                            <option value="Concón">Concón</option>
-                            <option value="Quilpué">Quilpué</option>
-                            <option value="Villa Alemana">Villa Alemana</option>
-                            <option value="Olmué">Olmué</option>
-                            <option value="Limache">Limache</option>
-                            <option value="Otra localidad">Otra localidad V Región</option>
-                        </select>
-                    </div>
-                    <div class="form-field">
-                        <label>Tipo de Evento</label>
-                        <select id="industry" required>
-                            <option value="Matrimonio">Matrimonio Integral & Banquetería</option>
-                            <option value="Corporativo">Cena / Fiesta de Fin de Año Empresa</option>
-                            <option value="Congreso">Congreso, Seminario o Jornada</option>
-                            <option value="Graduacion">Graduación Universitaria</option>
-                            <option value="Cumpleanos">Cumpleaños / Gala Social</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-field">
-                        <label>Presupuesto Estimado (CLP $)</label>
-                        <input type="number" id="budget" required placeholder="Ej: 5500000">
-                    </div>
-                    <div class="form-field">
-                        <label>Fecha Tentativa</label>
-                        <input type="date" id="eventDate">
-                    </div>
-                </div>
-
-                <div class="form-field" style="margin-bottom: 30px;">
-                    <label>Detalles del Evento o Cantidad de Invitados</label>
-                    <textarea id="notes" rows="4" placeholder="Indica cantidad de personas, necesidad de DJ, ambientación floral, banquetería de 3 tiempos..."></textarea>
-                </div>
-
-                <button type="submit" id="submitBtn" class="btn-gold">
-                    SOLICITAR DISPONIBILIDAD Y COTIZAR →
-                </button>
-                <p style="text-align: center; color: #777; font-size: 12px; margin-top: 15px;">
-                    Serás conectado inmediatamente con Patricio (+56 9 8137 7642) vía WhatsApp.
-                </p>
-            </form>
-        </div>
-    </main>
-
-    <!-- Footer Gran Royal -->
-    <footer class="footer">
-        <div class="container footer-grid">
-            <div class="footer-section">
-                <span class="logo-text" style="font-size: 22px; display: block; margin-bottom: 15px;">Gran Royal</span>
-                <p style="color: #888; font-size: 13px; line-height: 1.8;">
-                    Producción integral de matrimonios, eventos corporativos y celebraciones de autor en Viña del Mar y la Región de Valparaíso.
-                </p>
-            </div>
-
-            <div class="footer-section">
-                <h3>Contacto</h3>
-                <div class="footer-contact">
-                    <div class="contact-item">
-                        <span class="contact-item-label">TELÉFONO DIRECTO</span>
-                        <span class="contact-item-text"><a href="tel:+56981377642">+56 9 8137 7642</a></span>
-                    </div>
-                    <div class="contact-item">
-                        <span class="contact-item-label">EMAIL</span>
-                        <span class="contact-item-text"><a href="mailto:contacto@granroyal.cl">contacto@granroyal.cl</a></span>
-                    </div>
-                    <div class="contact-item">
-                        <span class="contact-item-label">UBICACIÓN</span>
-                        <span style="color: #ccc; font-size: 14px;">Viña del Mar, Chile</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="footer-section">
-                <h3>Conectar</h3>
-                <a href="https://www.instagram.com/granroyalproducciones/" target="_blank" class="instagram-btn">
-                    <i class="fab fa-instagram" style="font-size: 18px;"></i> Seguir en Instagram
-                </a>
-                <div class="social-row">
-                    <a href="https://wa.me/56981377642" target="_blank" class="wa-btn">
-                        <i class="fab fa-whatsapp" style="font-size: 16px;"></i> WhatsApp
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <div class="footer-bottom">
-            &copy; 2026 GRAN ROYAL PRODUCCIONES | VIÑA DEL MAR, CHILE
-        </div>
-    </footer>
-
-    <!-- WhatsApp Flotante -->
-    <div class="floating-container">
-        <a href="https://wa.me/56981377642?text=Hola%20Patricio,%20quisiera%20cotizar%20un%20evento%20con%20Gran%20Royal" target="_blank" class="float-wa" title="Escríbenos por WhatsApp">
-            <i class="fab fa-whatsapp"></i>
-        </a>
+  <!-- Contenido Central -->
+  <main class="max-w-3xl mx-auto px-6 py-12 flex-grow w-full">
+    <div class="text-center space-y-3 mb-10">
+      <span class="text-xs font-semibold tracking-widest text-amber-400 uppercase">Reserva y Producción Integral</span>
+      <h1 class="text-3xl md:text-4xl font-serif-luxury font-bold text-neutral-100">
+        Cotiza tu Evento con <span class="gold-gradient">Gran Royal</span>
+      </h1>
+      <p class="text-sm text-neutral-400 max-w-xl mx-auto font-light leading-relaxed">
+        Matrimonios, Galas de Graduación y Eventos Corporativos en Viña del Mar, Valparaíso y Concón. Diseñamos experiencias memorables con la más alta técnica audiovisual y banquetería.
+      </p>
     </div>
 
-    <script>
-        async function handleRoyalQuote(e) {
-            e.preventDefault();
-            const btn = document.getElementById('submitBtn');
-            btn.disabled = true;
-            btn.textContent = "PROCESANDO SOLICITUD...";
+    <!-- Formulario de Cotización -->
+    <div class="bg-neutral-900/40 border gold-border rounded-2xl p-6 md:p-8 gold-glow backdrop-blur-sm">
+      <form id="quoteForm" onsubmit="sendToWhatsApp(event)" class="space-y-5">
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs uppercase tracking-wider text-neutral-400 mb-1.5 font-medium">Nombre o Razón Social *</label>
+            <input type="text" id="name" required placeholder="Ej: Marcela Gómez o Empresa S.A." class="w-full bg-black/60 border border-neutral-800 rounded-xl px-4 py-2.5 text-sm text-neutral-200 focus:outline-none focus:border-amber-400/60 transition">
+          </div>
+          <div>
+            <label class="block text-xs uppercase tracking-wider text-neutral-400 mb-1.5 font-medium">Correo Electrónico *</label>
+            <input type="email" id="email" required placeholder="marcela@correo.cl" class="w-full bg-black/60 border border-neutral-800 rounded-xl px-4 py-2.5 text-sm text-neutral-200 focus:outline-none focus:border-amber-400/60 transition">
+          </div>
+        </div>
 
-            const companyName = document.getElementById('companyName').value;
-            const contactEmail = document.getElementById('contactEmail').value;
-            const city = document.getElementById('city').value;
-            const industry = document.getElementById('industry').value;
-            const budget = parseFloat(document.getElementById('budget').value) || 0;
-            const eventDate = document.getElementById('eventDate').value;
-            const notes = document.getElementById('notes').value;
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs uppercase tracking-wider text-neutral-400 mb-1.5 font-medium">Tipo de Evento *</label>
+            <select id="eventType" required class="w-full bg-black/60 border border-neutral-800 rounded-xl px-4 py-2.5 text-sm text-neutral-200 focus:outline-none focus:border-amber-400/60 transition">
+              <option value="Matrimonio de Gala">Matrimonio de Gala</option>
+              <option value="Fiesta de Graduación / Gala 4to Medio">Fiesta de Graduación / Gala 4to Medio</option>
+              <option value="Evento Corporativo o Cena Anual">Evento Corporativo o Cena Anual</option>
+              <option value="Celebración Exclusiva / Cumpleaños VIP">Celebración Exclusiva / Cumpleaños VIP</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs uppercase tracking-wider text-neutral-400 mb-1.5 font-medium">N° Estimado de Invitados *</label>
+            <input type="number" id="guests" required min="30" placeholder="Ej: 120" class="w-full bg-black/60 border border-neutral-800 rounded-xl px-4 py-2.5 text-sm text-neutral-200 focus:outline-none focus:border-amber-400/60 transition">
+          </div>
+        </div>
 
-            try {
-                // 1. Obtener tenant Gran Royal
-                const tenantsRes = await fetch('/api/tenants');
-                const tenantsData = await tenantsRes.json();
-                const granRoyal = tenantsData.tenants?.find(t => t.slug === 'gran-royal') || tenantsData.tenants?.[0];
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs uppercase tracking-wider text-neutral-400 mb-1.5 font-medium">Fecha Tentativa *</label>
+            <input type="date" id="date" required class="w-full bg-black/60 border border-neutral-800 rounded-xl px-4 py-2.5 text-sm text-neutral-200 focus:outline-none focus:border-amber-400/60 transition">
+          </div>
+          <div>
+            <label class="block text-xs uppercase tracking-wider text-neutral-400 mb-1.5 font-medium">Comuna Preferente *</label>
+            <select id="city" required class="w-full bg-black/60 border border-neutral-800 rounded-xl px-4 py-2.5 text-sm text-neutral-200 focus:outline-none focus:border-amber-400/60 transition">
+              <option value="Viña del Mar">Viña del Mar</option>
+              <option value="Concón">Concón</option>
+              <option value="Valparaíso">Valparaíso</option>
+              <option value="Quilpué / Villa Alemana">Quilpué / Villa Alemana</option>
+              <option value="Otro sector V Región">Otro sector V Región</option>
+            </select>
+          </div>
+        </div>
 
-                if (!granRoyal) {
-                    alert('Error: Tenant de Gran Royal no encontrado.');
-                    btn.disabled = false;
-                    btn.textContent = 'SOLICITAR DISPONIBILIDAD Y COTIZAR →';
-                    return;
-                }
+        <div>
+          <label class="block text-xs uppercase tracking-wider text-neutral-400 mb-1.5 font-medium">Requerimientos Específicos (Opcional)</label>
+          <textarea id="notes" rows="3" placeholder="Ej: Salón frente al mar, DJ en vivo, cabina 360°, banquetería de 4 tiempos..." class="w-full bg-black/60 border border-neutral-800 rounded-xl px-4 py-2.5 text-sm text-neutral-200 focus:outline-none focus:border-amber-400/60 transition"></textarea>
+        </div>
 
-                // 2. Ingestar y calificar en el Growth OS
-                await fetch(`/api/tenants/${granRoyal.id}/leads`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json; charset=utf-8' },
-                    body: JSON.stringify({
-                        companyName,
-                        contactEmail,
-                        city,
-                        industry,
-                        budget,
-                        criteria: {
-                            industryMatch: true,
-                            locationMatch: ['Viña del Mar', 'Valparaíso', 'Concón', 'Villa Alemana', 'Olmué', 'Limache'].includes(city),
-                            needDetected: true,
-                            budgetQualified: budget >= 2500000,
-                            priorEngagement: false,
-                            favorableTiming: true
-                        }
-                    })
-                });
+        <div class="pt-2">
+          <button type="submit" class="w-full bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-400 text-black font-semibold py-3.5 px-6 rounded-xl transition duration-200 text-sm tracking-wider uppercase shadow-lg shadow-amber-500/10 flex items-center justify-center gap-2">
+            <span>Continuar a WhatsApp con Patricio</span>
+            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.664-.699c.97.53 1.776.816 2.796.816 3.18 0 5.767-2.587 5.767-5.766.001-3.182-2.585-5.768-5.767-5.768zm0 10.368c-.89 0-1.637-.234-2.39-.684l-.171-.102-1.775.466.474-1.733-.112-.178c-.495-.788-.757-1.579-.757-2.371 0-2.535 2.062-4.597 4.597-4.597 2.535 0 4.597 2.062 4.598 4.597 0 2.536-2.063 4.602-4.464 4.602z"/></svg>
+          </button>
+        </div>
+      </form>
+    </div>
 
-                // 3. Abrir WhatsApp de Patricio con mensaje estructurado
-                const waText = `Hola Patricio, solicité una cotización en la web de Gran Royal:%0A• Solicitante: ${encodeURIComponent(companyName)}%0A• Servicio: ${encodeURIComponent(industry)}%0A• Ciudad: ${encodeURIComponent(city)}%0A• Fecha: ${encodeURIComponent(eventDate || 'Por definir')}%0A• Presupuesto: $${budget.toLocaleString('es-CL')}%0A• Requerimientos: ${encodeURIComponent(notes || 'Sin especificaciones')}`;
-                
-                window.location.href = `https://wa.me/56981377642?text=${waText}`;
-            } catch (err) {
-                console.error(err);
-                alert('Ocurrió un error. Intenta nuevamente o contáctanos por WhatsApp.');
-                btn.disabled = false;
-                btn.textContent = 'SOLICITAR DISPONIBILIDAD Y COTIZAR →';
+    <!-- Garantías de Servicio -->
+    <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+      <div class="p-4 rounded-xl border border-neutral-900 bg-black/40">
+        <h4 class="font-serif-luxury text-amber-400 text-sm font-semibold mb-1">Técnica Integral</h4>
+        <p class="text-xs text-neutral-400 font-light">Sonido lineal, iluminación perimetral y pantallas de alta definición.</p>
+      </div>
+      <div class="p-4 rounded-xl border border-neutral-900 bg-black/40">
+        <h4 class="font-serif-luxury text-amber-400 text-sm font-semibold mb-1">Locaciones Exclusivas</h4>
+        <p class="text-xs text-neutral-400 font-light">Convenios con salones y casonas de primer nivel en la V Región.</p>
+      </div>
+      <div class="p-4 rounded-xl border border-neutral-900 bg-black/40">
+        <h4 class="font-serif-luxury text-amber-400 text-sm font-semibold mb-1">Respaldo Profesional</h4>
+        <p class="text-xs text-neutral-400 font-light">Coordinación en terreno de principio a fin sin imprevistos.</p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="border-t border-neutral-900 bg-black/80 py-6 text-center text-xs text-neutral-500">
+    <p>© 2026 Gran Royal Producciones — Viña del Mar, Chile. Todos los derechos reservados.</p>
+  </footer>
+
+  <script>
+    async function sendToWhatsApp(e) {
+      e.preventDefault();
+
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const eventType = document.getElementById('eventType').value;
+      const guests = document.getElementById('guests').value;
+      const date = document.getElementById('date').value;
+      const city = document.getElementById('city').value;
+      const notes = document.getElementById('notes').value;
+
+      // 1. Guardar automáticamente el prospecto en el Growth OS (Tenant de Gran Royal)
+      try {
+        fetch('/api/tenants/gran-royal/leads', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json; charset=utf-8' },
+          body: JSON.stringify({
+            companyName: name,
+            contactEmail: email,
+            city: city,
+            industry: eventType,
+            budget: 3500000,
+            criteria: {
+              industryMatch: true,
+              locationMatch: true,
+              needDetected: true,
+              budgetQualified: true,
+              priorEngagement: true,
+              favorableTiming: true
             }
-        }
-    </script>
+          })
+        }).catch(err => console.log('Lead sync offline', err));
+      } catch (_) {}
+
+      // 2. Redirección fluida a WhatsApp hacia Patricio
+      const message = `✨ *SOLICITUD DE COTIZACIÓN VIP — GRAN ROYAL*\n\n` +
+        `👤 *Cliente:* ${name}\n` +
+        `📧 *Correo:* ${email}\n` +
+        `🎉 *Tipo de Evento:* ${eventType}\n` +
+        `👥 *N° Estimado de Invitados:* ${guests} personas\n` +
+        `📅 *Fecha Tentativa:* ${date}\n` +
+        `📍 *Comuna / Ubicación:* ${city}\n` +
+        (notes ? `📝 *Detalles Adicionales:* ${notes}\n\n` : `\n`) +
+        `Hola Patricio, deseo coordinar la disponibilidad técnica y agendar una visita a salones.`;
+
+      const encodedMessage = encodeURIComponent(message);
+      const whatsappUrl = `https://wa.me/56981377642?text=${encodedMessage}`;
+
+      window.open(whatsappUrl, '_blank');
+    }
+  </script>
 </body>
 </html>

@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MasterTech Growth OS — Live Dashboard</title>
+
+  <!-- Favicon MasterTech OS SVG -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230f172a'/><path d='M25 75 L25 25 L45 55 L65 25 L65 75' stroke='%2338bdf8' stroke-width='10' stroke-linecap='round' stroke-linejoin='round' fill='none'/><circle cx='80' cy='30' r='6' fill='%2310b981'/></svg>">
+
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -39,13 +43,41 @@
   <main class="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
     <!-- Columna izquierda: Formularios -->
     <div class="lg:col-span-4 space-y-6">
+      
+      <!-- Radar de Prospección Local Gratuito -->
+      <section class="bg-slate-900/50 border border-slate-800 rounded-xl p-5 shadow-sm">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-sm font-semibold text-amber-400 uppercase tracking-wider">Radar de Prospección V Región</h2>
+          <span class="text-[10px] bg-amber-500/10 text-amber-400 px-2 py-0.5 rounded border border-amber-500/20">Costo $0</span>
+        </div>
+        <form id="prospectForm" onsubmit="runProspecting(event)" class="space-y-3">
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">Nicho / Rubro Objetivo</label>
+            <input type="text" id="prospectQuery" required placeholder="Ej: Colegios particulares, Clínicas, Empresas" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-500">
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">Comuna Objetivo</label>
+            <select id="prospectCity" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-500 text-slate-200">
+              <option value="Viña del Mar">Viña del Mar</option>
+              <option value="Valparaíso">Valparaíso</option>
+              <option value="Concón">Concón</option>
+              <option value="Quilpué">Quilpué</option>
+              <option value="Villa Alemana">Villa Alemana</option>
+            </select>
+          </div>
+          <button type="submit" id="btnProspect" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-2 rounded-lg text-sm transition">
+            Escanear y Atraer Prospectos
+          </button>
+        </form>
+      </section>
+
       <!-- Ingesta de Oferta Comercial -->
       <section class="bg-slate-900/50 border border-slate-800 rounded-xl p-5 shadow-sm">
         <h2 class="text-sm font-semibold text-slate-200 uppercase tracking-wider mb-4">Ingestar Oferta Comercial</h2>
         <form id="offerForm" onsubmit="submitOffer(event)" class="space-y-3">
           <div>
             <label class="block text-xs text-slate-400 mb-1">Título de la Oferta</label>
-            <input type="text" id="offerTitle" required placeholder="Ej: Consultoría Cloud" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+            <input type="text" id="offerTitle" required placeholder="Ej: Matrimonios Premium 2026" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
           </div>
           <div class="grid grid-cols-2 gap-3">
             <div>
@@ -53,17 +85,17 @@
               <input type="text" id="offerCity" required placeholder="Viña del Mar" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
             </div>
             <div>
-              <label class="block text-xs text-slate-400 mb-1">Precio Unitario ($)</label>
-              <input type="number" id="offerPrice" placeholder="50000" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+              <label class="block text-xs text-slate-400 mb-1">Precio Base ($)</label>
+              <input type="number" id="offerPrice" placeholder="5000000" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
             </div>
           </div>
           <div>
             <label class="block text-xs text-slate-400 mb-1">Audiencia Objetivo</label>
-            <input type="text" id="offerAudience" required placeholder="Directores TI, PYMEs" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+            <input type="text" id="offerAudience" required placeholder="Parejas de novios, Familias" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
           </div>
           <div>
             <label class="block text-xs text-slate-400 mb-1">Objetivo de Conversión</label>
-            <input type="text" id="offerObjective" required placeholder="Agendar llamada" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+            <input type="text" id="offerObjective" required placeholder="Cotizar fecha por WhatsApp" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
           </div>
           <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium py-2 rounded-lg text-sm transition">
             Lanzar Campañas Automáticas
@@ -71,13 +103,13 @@
         </form>
       </section>
 
-      <!-- Ingesta y Calificación de Leads -->
+      <!-- Ingesta y Calificación Manual de Leads -->
       <section class="bg-slate-900/50 border border-slate-800 rounded-xl p-5 shadow-sm">
-        <h2 class="text-sm font-semibold text-slate-200 uppercase tracking-wider mb-4">Evaluar Lead (Scoring)</h2>
+        <h2 class="text-sm font-semibold text-slate-200 uppercase tracking-wider mb-4">Evaluar Lead Manual (Scoring)</h2>
         <form id="leadForm" onsubmit="submitLead(event)" class="space-y-3">
           <div>
             <label class="block text-xs text-slate-400 mb-1">Empresa Prospecto</label>
-            <input type="text" id="leadCompany" required placeholder="Nombre de empresa" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+            <input type="text" id="leadCompany" required placeholder="Nombre de empresa o cliente" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
           </div>
           <div class="grid grid-cols-2 gap-3">
             <div>
@@ -86,17 +118,17 @@
             </div>
             <div>
               <label class="block text-xs text-slate-400 mb-1">Ciudad</label>
-              <input type="text" id="leadCity" required placeholder="Santiago" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+              <input type="text" id="leadCity" required placeholder="Viña del Mar" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
             </div>
           </div>
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block text-xs text-slate-400 mb-1">Industria</label>
-              <input type="text" id="leadIndustry" required placeholder="Tecnología" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+              <label class="block text-xs text-slate-400 mb-1">Industria / Evento</label>
+              <input type="text" id="leadIndustry" required placeholder="Matrimonios" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
             </div>
             <div>
               <label class="block text-xs text-slate-400 mb-1">Presupuesto ($)</label>
-              <input type="number" id="leadBudget" placeholder="1500000" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+              <input type="number" id="leadBudget" placeholder="4500000" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
             </div>
           </div>
 
@@ -121,6 +153,43 @@
 
     <!-- Columna derecha: Monitoreo -->
     <div class="lg:col-span-8 space-y-6">
+      
+      <!-- Publicador Orgánico de Redes Sociales -->
+      <section class="bg-slate-900/50 border border-slate-800 rounded-xl p-5 shadow-sm">
+        <div class="flex justify-between items-center mb-4">
+          <div class="flex items-center gap-2">
+            <h2 class="text-sm font-semibold text-slate-200 uppercase tracking-wider">Publicador Orgánico de Redes Sociales</h2>
+            <span class="text-[10px] bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/20">Tráfico $0</span>
+          </div>
+          <button onclick="generatePosts()" class="bg-blue-600 hover:bg-blue-500 text-xs text-white font-medium px-3 py-1.5 rounded-lg transition">
+            Generar Contenido Listo
+          </button>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-3 mb-4">
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">Tipo de Evento</label>
+            <select id="contentService" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500">
+              <option value="Matrimonios y Bodas">Matrimonios y Bodas</option>
+              <option value="Graduaciones y Galas">Graduaciones y Galas</option>
+              <option value="Eventos Corporativos">Eventos Corporativos</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">Ubicación</label>
+            <select id="contentCity" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500">
+              <option value="Viña del Mar">Viña del Mar</option>
+              <option value="Valparaíso">Valparaíso</option>
+              <option value="Concón">Concón</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="postsContainer" class="space-y-3">
+          <p class="text-xs text-slate-500 text-center py-4">Selecciona el tipo de evento y haz clic en "Generar Contenido Listo".</p>
+        </div>
+      </section>
+
       <!-- Ranking de Leads -->
       <section class="bg-slate-900/50 border border-slate-800 rounded-xl p-5 shadow-sm">
         <div class="flex justify-between items-center mb-4">
@@ -131,12 +200,12 @@
           <table class="w-full text-left text-sm">
             <thead class="text-xs uppercase bg-slate-950/60 text-slate-400 border-b border-slate-800">
               <tr>
-                <th class="py-3 px-4">Empresa</th>
-                <th class="py-3 px-4">Industria / Ciudad</th>
+                <th class="py-3 px-4">Empresa / Prospecto</th>
+                <th class="py-3 px-4">Rubro / Ciudad</th>
                 <th class="py-3 px-4 text-center">Score</th>
                 <th class="py-3 px-4 text-center">Prioridad</th>
                 <th class="py-3 px-4 text-center">Estado</th>
-                <th class="py-3 px-4 text-center">WhatsApp</th>
+                <th class="py-3 px-4 text-center">Despachar Propuesta</th>
               </tr>
             </thead>
             <tbody id="leadsTableBody" class="divide-y divide-slate-800/60">
@@ -224,8 +293,20 @@
         else if (l.priority === 'HIGH') badgeColor = 'bg-orange-500/20 text-orange-400 border border-orange-500/30';
         else if (l.priority === 'MEDIUM') badgeColor = 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30';
 
-        const waText = encodeURIComponent(`Hola ${l.companyName}, te contactamos desde Gran Royal respecto a tu solicitud de eventos en ${l.city}.`);
+        const isSchool = l.industry.toLowerCase().includes('colegio') || l.companyName.toLowerCase().includes('school') || l.companyName.toLowerCase().includes('colegio');
+        
+        let pitch = '';
+        if (isSchool) {
+          pitch = `Estimado equipo de ${l.companyName}: Les escribe Patricio desde Gran Royal Producciones (Viña del Mar). Queremos presentarles nuestra propuesta 'Todo Incluido' para su Fiesta de Graduación y Gala 2026/2027 (Catering premium, Salones exclusivos en la V Región, DJ, Plataforma 360° y Cabina Fotográfica). ¿Con quién podríamos coordinar el envío del catálogo detallado?`;
+        } else {
+          pitch = `Estimado equipo de ${l.companyName}: Les saluda Patricio de Gran Royal Producciones. Ponemos a su disposición nuestra cobertura de eventos corporativos, congresos y cenas de fin de año en Viña del Mar y Valparaíso. ¿Podríamos coordinar una breve reunión o cotización sin costo?`;
+        }
+
+        const waText = encodeURIComponent(pitch);
         const waLink = `https://wa.me/56981377642?text=${waText}`;
+        const mailSubject = encodeURIComponent(`Propuesta de Producción de Eventos para ${l.companyName} — Gran Royal`);
+        const mailBody = encodeURIComponent(`${pitch}\n\nContacto directo:\nPatricio - Gran Royal Producciones\nWhatsApp: +56 9 8137 7642\nhttps://granroyal.cl`);
+        const mailLink = `mailto:${l.contactEmail}?subject=${mailSubject}&body=${mailBody}`;
 
         return `
           <tr class="hover:bg-slate-800/30 transition">
@@ -240,9 +321,14 @@
             </td>
             <td class="py-3 px-4 text-center text-xs text-slate-400">${l.status}</td>
             <td class="py-3 px-4 text-center">
-              <a href="${waLink}" target="_blank" class="inline-flex items-center gap-1 bg-emerald-600/20 hover:bg-emerald-600/40 text-emerald-400 border border-emerald-500/40 text-xs px-2.5 py-1 rounded-lg transition font-medium">
-                Abrir Chat
-              </a>
+              <div class="flex items-center justify-center gap-1.5">
+                <a href="${waLink}" target="_blank" title="Enviar propuesta por WhatsApp" class="inline-flex items-center gap-1 bg-emerald-600/20 hover:bg-emerald-600/40 text-emerald-400 border border-emerald-500/40 text-xs px-2 py-1 rounded transition font-medium">
+                  WhatsApp
+                </a>
+                <a href="${mailLink}" target="_blank" title="Enviar correo formal" class="inline-flex items-center gap-1 bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 border border-blue-500/40 text-xs px-2 py-1 rounded transition font-medium">
+                  Email
+                </a>
+              </div>
             </td>
           </tr>
         `;
@@ -279,6 +365,68 @@
         if (data.tenantId === currentTenantId) loadLeads();
       });
       eventSource.addEventListener('tenant_created', () => loadTenants());
+    }
+
+    async function runProspecting(e) {
+      e.preventDefault();
+      if (!currentTenantId) return alert('Selecciona un tenant.');
+      const btn = document.getElementById('btnProspect');
+      btn.disabled = true;
+      btn.textContent = 'Escaneando la web...';
+
+      const query = document.getElementById('prospectQuery').value;
+      const city = document.getElementById('prospectCity').value;
+
+      try {
+        const res = await fetch(`${API_URL}/api/tenants/${currentTenantId}/prospect`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json; charset=utf-8' },
+          body: JSON.stringify({ query, city })
+        });
+        const data = await res.json();
+        alert(data.message || 'Escaneo completado.');
+      } catch (err) {
+        alert('Error ejecutando el escaneo.');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Escanear y Atraer Prospectos';
+      }
+    }
+
+    async function generatePosts() {
+      const serviceType = document.getElementById('contentService').value;
+      const city = document.getElementById('contentCity').value;
+      const container = document.getElementById('postsContainer');
+
+      container.innerHTML = '<p class="text-xs text-slate-500 text-center py-4">Generando piezas de contenido...</p>';
+
+      try {
+        const res = await fetch(`${API_URL}/api/content/generate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json; charset=utf-8' },
+          body: JSON.stringify({ serviceType, city })
+        });
+        const data = await res.json();
+
+        container.innerHTML = data.posts.map(p => `
+          <div class="bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs space-y-2">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-amber-400">${p.platform}</span>
+              <button onclick="navigator.clipboard.writeText(\`${p.copy.replace(/`/g, '\\`')}\`); alert('Texto copiado al portapapeles.');" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-0.5 rounded border border-slate-700">
+                Copiar Texto
+              </button>
+            </div>
+            <p class="font-semibold text-slate-200">${p.title}</p>
+            <p class="text-slate-400 whitespace-pre-line">${p.copy}</p>
+            <p class="text-blue-400">${p.hashtags.join(' ')}</p>
+            <div class="pt-1">
+              <a href="${p.ctaUrl}" target="_blank" class="text-emerald-400 hover:underline">Probar enlace directo de WhatsApp →</a>
+            </div>
+          </div>
+        `).join('');
+      } catch (err) {
+        container.innerHTML = '<p class="text-xs text-red-400 text-center py-4">Error generando contenido.</p>';
+      }
     }
 
     async function submitOffer(e) {

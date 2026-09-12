@@ -6,6 +6,8 @@ import { PrismaClient } from '@prisma/client';
 import { dispatchCampaignGeneration } from './dispatcher';
 import { calculateLeadScore, ScoringCriteria } from './scoring';
 import { addSSEClient, broadcastEvent } from './events';
+import { scrapeLocalProspects } from './scraper';
+import { generateOrganicCampaigns } from './contentEngine';
 
 dotenv.config();
 
@@ -84,12 +86,15 @@ app.post('/api/tenants/:tenantId/offers', async (req: Request, res: Response) =>
   }
 
   try {
-    const tenant = await prisma.tenant.findUnique({ where: { id: tenantId } });
-    if (!tenant) return res.status(404).json({ error: 'Tenant no encontrado.' });
+    let targetTenant = await prisma.tenant.findUnique({ where: { id: tenantId } });
+    if (!targetTenant) {
+      targetTenant = await prisma.tenant.findUnique({ where: { slug: tenantId } });
+    }
+    if (!targetTenant) return res.status(404).json({ error: 'Tenant no encontrado.' });
 
     const offer = await prisma.offer.create({
       data: {
-        tenantId,
+        tenantId: targetTenant.id,
         title,
         targetCity,
         price: price ? parseFloat(price) : null,
@@ -123,12 +128,18 @@ app.get('/api/tenants/:tenantId/campaigns', async (req: Request, res: Response) 
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
   const { tenantId } = req.params;
   try {
+    let targetTenant = await prisma.tenant.findUnique({ where: { id: tenantId } });
+    if (!targetTenant) {
+      targetTenant = await prisma.tenant.findUnique({ where: { slug: tenantId } });
+    }
+    const resolvedId = targetTenant ? targetTenant.id : tenantId;
+
     const campaigns = await prisma.campaign.findMany({
-      where: { tenantId },
+      where: { tenantId: resolvedId },
       include: { offer: true },
       orderBy: { createdAt: 'desc' }
     });
-    res.json({ tenantId, total: campaigns.length, campaigns });
+    res.json({ tenantId: resolvedId, total: campaigns.length, campaigns });
   } catch (err: any) {
     res.status(500).json({ error: 'Error obteniendo campañas', details: err.message });
   }
@@ -153,6 +164,12 @@ app.post('/api/tenants/:tenantId/leads', async (req: Request, res: Response) => 
   }
 
   try {
+    let targetTenant = await prisma.tenant.findUnique({ where: { id: tenantId } });
+    if (!targetTenant) {
+      targetTenant = await prisma.tenant.findUnique({ where: { slug: tenantId } });
+    }
+    const resolvedTenantId = targetTenant ? targetTenant.id : tenantId;
+
     const scoringInput: ScoringCriteria = {
       industryMatch: !!criteria?.industryMatch,
       locationMatch: !!criteria?.locationMatch,
@@ -166,7 +183,7 @@ app.post('/api/tenants/:tenantId/leads', async (req: Request, res: Response) => 
 
     const lead = await prisma.lead.create({
       data: {
-        tenantId,
+        tenantId: resolvedTenantId,
         campaignId: campaignId || null,
         companyName,
         contactEmail,
@@ -195,14 +212,91 @@ app.get('/api/tenants/:tenantId/leads', async (req: Request, res: Response) => {
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
   const { tenantId } = req.params;
   try {
+    let targetTenant = await prisma.tenant.findUnique({ where: { id: tenantId } });
+    if (!targetTenant) {
+      targetTenant = await prisma.tenant.findUnique({ where: { slug: tenantId } });
+    }
+    const resolvedId = targetTenant ? targetTenant.id : tenantId;
+
     const leads = await prisma.lead.findMany({
-      where: { tenantId },
+      where: { tenantId: resolvedId },
       orderBy: { score: 'desc' }
     });
-    res.json({ tenantId, total: leads.length, leads });
+    res.json({ tenantId: resolvedId, total: leads.length, leads });
   } catch (err: any) {
     res.status(500).json({ error: 'Error consultando leads', details: err.message });
   }
+});
+
+// 8. Prospección Local Gratuita (Outbound Scraper)
+app.post('/api/tenants/:tenantId/prospect', async (req: Request, res: Response) => {
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  const { tenantId } = req.params;
+  const { query, city } = req.body;
+
+  if (!query || !city) {
+    return res.status(400).json({ error: 'query y city son requeridos.' });
+  }
+
+  try {
+    let targetTenant = await prisma.tenant.findUnique({ where: { id: tenantId } });
+    if (!targetTenant) {
+      targetTenant = await prisma.tenant.findUnique({ where: { slug: tenantId } });
+    }
+    const resolvedTenantId = targetTenant ? targetTenant.id : tenantId;
+
+    const rawProspects = await scrapeLocalProspects(query, city);
+    const savedLeads = [];
+
+    for (const p of rawProspects) {
+      const scoringInput = {
+        industryMatch: true,
+        locationMatch: ['Viña del Mar', 'Valparaíso', 'Concón'].includes(p.city),
+        needDetected: true,
+        budgetQualified: false,
+        priorEngagement: false,
+        favorableTiming: true
+      };
+
+      const { score, priority } = calculateLeadScore(scoringInput);
+
+      const lead = await prisma.lead.create({
+        data: {
+          tenantId: resolvedTenantId,
+          companyName: p.name,
+          contactEmail: p.email || 'contacto@empresa.cl',
+          city: p.city,
+          industry: p.category,
+          budget: 2500000,
+          score,
+          priority,
+          status: 'DETECTED'
+        }
+      });
+
+      broadcastEvent('lead_qualified', lead);
+      savedLeads.push(lead);
+    }
+
+    res.status(200).json({
+      message: `Se detectaron y agregaron ${savedLeads.length} nuevos prospectos locales.`,
+      prospects: savedLeads
+    });
+  } catch (err: any) {
+    res.status(500).json({ error: 'Error durante la prospección', details: err.message });
+  }
+});
+
+// 9. Generador de Contenido Orgánico para Redes
+app.post('/api/content/generate', (req: Request, res: Response) => {
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  const { serviceType, city } = req.body;
+  if (!serviceType || !city) {
+    return res.status(400).json({ error: 'serviceType y city son obligatorios' });
+  }
+
+  const posts = generateOrganicCampaigns(serviceType, city);
+  res.json({ serviceType, city, posts });
 });
 
 app.listen(PORT, () => {
