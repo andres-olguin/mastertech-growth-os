@@ -1,0 +1,48 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// 1. Tenant (Aislamiento de empresas)
+model Tenant {
+  id          String     @id @default(uuid())
+  name        String
+  slug        String     @unique
+  createdAt   DateTime   @default(now())
+  offers      Offer[]
+  campaigns   Campaign[]
+}
+
+// 2. Offer Engine (Qué vende la empresa)
+model Offer {
+  id          String     @id @default(uuid())
+  tenantId    String
+  title       String
+  targetCity  String
+  price       Float?
+  audience    String     // JSON o texto estructurado: "Parejas, Centros de eventos"
+  objective   String     // Ej: "Generar cotizaciones"
+  createdAt   DateTime   @default(now())
+  
+  tenant      Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  campaigns   Campaign[]
+}
+
+// 3. Campaign & Distribution Engine
+model Campaign {
+  id          String     @id @default(uuid())
+  tenantId    String
+  offerId     String
+  channel     String     // "B2C_INSTAGRAM", "B2B_LINKEDIN", "EMAIL"
+  headline    String
+  copy        String
+  status      String     @default("PENDING") // PENDING, GENERATED, DISTRIBUTED
+  createdAt   DateTime   @default(now())
+
+  tenant      Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  offer       Offer      @relation(fields: [offerId], references: [id], onDelete: Cascade)
+}
