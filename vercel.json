@@ -1,0 +1,18 @@
+{
+  "version": 2,
+  "public": false,
+  "routes": [
+    {
+      "src": "/cotizar/gran-royal",
+      "dest": "/apps/web/cotizar.html"
+    },
+    {
+      "src": "/",
+      "dest": "/apps/web/cotizar.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/apps/web/$1"
+    }
+  ]
+}

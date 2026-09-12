@@ -1,0 +1,12 @@
+[build]
+  publish = "apps/web"
+
+[[redirects]]
+  from = "/"
+  to = "/cotizar.html"
+  status = 200
+
+[[redirects]]
+  from = "/cotizar/gran-royal"
+  to = "/cotizar.html"
+  status = 200
