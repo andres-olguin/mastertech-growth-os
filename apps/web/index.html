@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MasterTech Growth OS — Live Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { 500: '#3b82f6', 600: '#2563eb', 900: '#1e3a8a' }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans antialiased">
+  <header class="border-b border-slate-800 bg-slate-900/60 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
+        <h1 class="text-xl font-bold tracking-tight">MasterTech Growth OS</h1>
+        <span class="text-xs bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full border border-slate-700">Realtime Core</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <select id="tenantSelect" class="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-blue-500">
+          <option value="">Cargando tenants...</option>
+        </select>
+        <button onclick="fetchInitialData()" class="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 px-3 py-1.5 rounded-lg transition">
+          Sincronizar
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+    <!-- Columna izquierda: Formularios -->
+    <div class="lg:col-span-4 space-y-6">
+      <!-- Ingesta de Oferta Comercial -->
+      <section class="bg-slate-900/50 border border-slate-800 rounded-xl p-5 shadow-sm">
+        <h2 class="text-sm font-semibold text-slate-200 uppercase tracking-wider mb-4">Ingestar Oferta Comercial</h2>
+        <form id="offerForm" onsubmit="submitOffer(event)" class="space-y-3">
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">Título de la Oferta</label>
+            <input type="text" id="offerTitle" required placeholder="Ej: Consultoría Cloud" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">Ciudad Objetivo</label>
+              <input type="text" id="offerCity" required placeholder="Viña del Mar" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+            </div>
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">Precio Unitario ($)</label>
+              <input type="number" id="offerPrice" placeholder="50000" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">Audiencia Objetivo</label>
+            <input type="text" id="offerAudience" required placeholder="Directores TI, PYMEs" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">Objetivo de Conversión</label>
+            <input type="text" id="offerObjective" required placeholder="Agendar llamada" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+          </div>
+          <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium py-2 rounded-lg text-sm transition">
+            Lanzar Campañas Automáticas
+          </button>
+        </form>
+      </section>
+
+      <!-- Ingesta y Calificación de Leads -->
+      <section class="bg-slate-900/50 border border-slate-800 rounded-xl p-5 shadow-sm">
+        <h2 class="text-sm font-semibold text-slate-200 uppercase tracking-wider mb-4">Evaluar Lead (Scoring)</h2>
+        <form id="leadForm" onsubmit="submitLead(event)" class="space-y-3">
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">Empresa Prospecto</label>
+            <input type="text" id="leadCompany" required placeholder="Nombre de empresa" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">Email Contacto</label>
+              <input type="email" id="leadEmail" required placeholder="contacto@empresa.cl" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+            </div>
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">Ciudad</label>
+              <input type="text" id="leadCity" required placeholder="Santiago" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">Industria</label>
+              <input type="text" id="leadIndustry" required placeholder="Tecnología" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+            </div>
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">Presupuesto ($)</label>
+              <input type="number" id="leadBudget" placeholder="1500000" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+            </div>
+          </div>
+
+          <div class="pt-2">
+            <span class="block text-xs text-slate-400 mb-2">Criterios de Ponderación:</span>
+            <div class="grid grid-cols-2 gap-2 text-xs text-slate-300">
+              <label class="flex items-center gap-1.5"><input type="checkbox" id="critIndustry" class="rounded bg-slate-800"> Industria (+20)</label>
+              <label class="flex items-center gap-1.5"><input type="checkbox" id="critLocation" class="rounded bg-slate-800"> Ubicación (+15)</label>
+              <label class="flex items-center gap-1.5"><input type="checkbox" id="critNeed" class="rounded bg-slate-800"> Necesidad (+25)</label>
+              <label class="flex items-center gap-1.5"><input type="checkbox" id="critBudget" class="rounded bg-slate-800"> Presupuesto (+20)</label>
+              <label class="flex items-center gap-1.5"><input type="checkbox" id="critEngagement" class="rounded bg-slate-800"> Interacción (+10)</label>
+              <label class="flex items-center gap-1.5"><input type="checkbox" id="critTiming" class="rounded bg-slate-800"> Timing (+10)</label>
+            </div>
+          </div>
+
+          <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-medium py-2 rounded-lg text-sm transition">
+            Calificar y Procesar Lead
+          </button>
+        </form>
+      </section>
+    </div>
+
+    <!-- Columna derecha: Monitoreo -->
+    <div class="lg:col-span-8 space-y-6">
+      <!-- Ranking de Leads -->
+      <section class="bg-slate-900/50 border border-slate-800 rounded-xl p-5 shadow-sm">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-sm font-semibold text-slate-200 uppercase tracking-wider">Opportunity Engine — Ranking de Leads</h2>
+          <span id="leadsCount" class="text-xs text-slate-400">0 leads</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead class="text-xs uppercase bg-slate-950/60 text-slate-400 border-b border-slate-800">
+              <tr>
+                <th class="py-3 px-4">Empresa</th>
+                <th class="py-3 px-4">Industria / Ciudad</th>
+                <th class="py-3 px-4 text-center">Score</th>
+                <th class="py-3 px-4 text-center">Prioridad</th>
+                <th class="py-3 px-4 text-center">Estado</th>
+                <th class="py-3 px-4 text-center">WhatsApp</th>
+              </tr>
+            </thead>
+            <tbody id="leadsTableBody" class="divide-y divide-slate-800/60">
+              <tr>
+                <td colspan="6" class="py-6 text-center text-slate-500 text-xs">Sin leads registrados para este tenant.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Campañas Generadas -->
+      <section class="bg-slate-900/50 border border-slate-800 rounded-xl p-5 shadow-sm">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-sm font-semibold text-slate-200 uppercase tracking-wider">Campaigns & Distribution Engine</h2>
+          <span id="campaignsCount" class="text-xs text-slate-400">0 campañas</span>
+        </div>
+        <div id="campaignsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <p class="text-xs text-slate-500 col-span-2 text-center py-6">No hay campañas generadas aún.</p>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const API_URL = 'http://localhost:4000';
+    let currentTenantId = '';
+
+    async function init() {
+      await loadTenants();
+      setupSSE();
+    }
+
+    async function loadTenants() {
+      const res = await fetch(`${API_URL}/api/tenants`);
+      const data = await res.json();
+      const select = document.getElementById('tenantSelect');
+      select.innerHTML = '';
+
+      if (data.tenants && data.tenants.length > 0) {
+        data.tenants.forEach(t => {
+          const opt = document.createElement('option');
+          opt.value = t.id;
+          opt.textContent = `${t.name} (${t.slug})`;
+          select.appendChild(opt);
+        });
+        currentTenantId = data.tenants[0].id;
+        select.onchange = (e) => {
+          currentTenantId = e.target.value;
+          fetchInitialData();
+        };
+        fetchInitialData();
+      } else {
+        select.innerHTML = '<option value="">Sin tenants</option>';
+      }
+    }
+
+    async function fetchInitialData() {
+      if (!currentTenantId) return;
+      await Promise.all([loadLeads(), loadCampaigns()]);
+    }
+
+    async function loadLeads() {
+      const res = await fetch(`${API_URL}/api/tenants/${currentTenantId}/leads`);
+      const data = await res.json();
+      renderLeads(data.leads || []);
+    }
+
+    async function loadCampaigns() {
+      const res = await fetch(`${API_URL}/api/tenants/${currentTenantId}/campaigns`);
+      const data = await res.json();
+      renderCampaigns(data.campaigns || []);
+    }
+
+    function renderLeads(leads) {
+      const tbody = document.getElementById('leadsTableBody');
+      document.getElementById('leadsCount').textContent = `${leads.length} leads`;
+      if (leads.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="py-6 text-center text-slate-500 text-xs">Sin leads registrados.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = leads.map(l => {
+        let badgeColor = 'bg-slate-800 text-slate-300';
+        if (l.priority === 'CRITICAL_HOT') badgeColor = 'bg-red-500/20 text-red-400 border border-red-500/30';
+        else if (l.priority === 'HIGH') badgeColor = 'bg-orange-500/20 text-orange-400 border border-orange-500/30';
+        else if (l.priority === 'MEDIUM') badgeColor = 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30';
+
+        const waText = encodeURIComponent(`Hola ${l.companyName}, te contactamos desde Gran Royal respecto a tu solicitud de eventos en ${l.city}.`);
+        const waLink = `https://wa.me/56981377642?text=${waText}`;
+
+        return `
+          <tr class="hover:bg-slate-800/30 transition">
+            <td class="py-3 px-4">
+              <div class="font-medium text-slate-200">${l.companyName}</div>
+              <div class="text-xs text-slate-500">${l.contactEmail}</div>
+            </td>
+            <td class="py-3 px-4 text-xs text-slate-400">${l.industry} · ${l.city}</td>
+            <td class="py-3 px-4 text-center font-bold text-slate-200">${l.score}/100</td>
+            <td class="py-3 px-4 text-center">
+              <span class="text-xs font-semibold px-2.5 py-1 rounded-full ${badgeColor}">${l.priority}</span>
+            </td>
+            <td class="py-3 px-4 text-center text-xs text-slate-400">${l.status}</td>
+            <td class="py-3 px-4 text-center">
+              <a href="${waLink}" target="_blank" class="inline-flex items-center gap-1 bg-emerald-600/20 hover:bg-emerald-600/40 text-emerald-400 border border-emerald-500/40 text-xs px-2.5 py-1 rounded-lg transition font-medium">
+                Abrir Chat
+              </a>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderCampaigns(campaigns) {
+      const container = document.getElementById('campaignsContainer');
+      document.getElementById('campaignsCount').textContent = `${campaigns.length} campañas`;
+      if (campaigns.length === 0) {
+        container.innerHTML = '<p class="text-xs text-slate-500 col-span-2 text-center py-6">No hay campañas generadas aún.</p>';
+        return;
+      }
+      container.innerHTML = campaigns.map(c => `
+        <div class="bg-slate-950 border border-slate-800 rounded-lg p-4 space-y-2">
+          <div class="flex justify-between items-center">
+            <span class="text-xs font-semibold px-2 py-0.5 rounded bg-blue-900/30 text-blue-400 border border-blue-800/40">${c.channel}</span>
+            <span class="text-[10px] text-slate-500">${new Date(c.createdAt).toLocaleTimeString()}</span>
+          </div>
+          <h3 class="text-sm font-semibold text-slate-200">${c.headline}</h3>
+          <p class="text-xs text-slate-400 whitespace-pre-line">${c.copy}</p>
+        </div>
+      `).join('');
+    }
+
+    function setupSSE() {
+      const eventSource = new EventSource(`${API_URL}/api/events`);
+      eventSource.addEventListener('campaign_generated', (e) => {
+        const data = JSON.parse(e.data);
+        if (data.tenantId === currentTenantId) loadCampaigns();
+      });
+      eventSource.addEventListener('lead_qualified', (e) => {
+        const data = JSON.parse(e.data);
+        if (data.tenantId === currentTenantId) loadLeads();
+      });
+      eventSource.addEventListener('tenant_created', () => loadTenants());
+    }
+
+    async function submitOffer(e) {
+      e.preventDefault();
+      if (!currentTenantId) return alert('Selecciona un tenant.');
+      const body = {
+        title: document.getElementById('offerTitle').value,
+        targetCity: document.getElementById('offerCity').value,
+        price: parseFloat(document.getElementById('offerPrice').value) || null,
+        audience: document.getElementById('offerAudience').value,
+        objective: document.getElementById('offerObjective').value
+      };
+      await fetch(`${API_URL}/api/tenants/${currentTenantId}/offers`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json; charset=utf-8' },
+        body: JSON.stringify(body)
+      });
+      e.target.reset();
+    }
+
+    async function submitLead(e) {
+      e.preventDefault();
+      if (!currentTenantId) return alert('Selecciona un tenant.');
+      const body = {
+        companyName: document.getElementById('leadCompany').value,
+        contactEmail: document.getElementById('leadEmail').value,
+        city: document.getElementById('leadCity').value,
+        industry: document.getElementById('leadIndustry').value,
+        budget: parseFloat(document.getElementById('leadBudget').value) || null,
+        criteria: {
+          industryMatch: document.getElementById('critIndustry').checked,
+          locationMatch: document.getElementById('critLocation').checked,
+          needDetected: document.getElementById('critNeed').checked,
+          budgetQualified: document.getElementById('critBudget').checked,
+          priorEngagement: document.getElementById('critEngagement').checked,
+          favorableTiming: document.getElementById('critTiming').checked
+        }
+      };
+      await fetch(`${API_URL}/api/tenants/${currentTenantId}/leads`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json; charset=utf-8' },
+        body: JSON.stringify(body)
+      });
+      e.target.reset();
+    }
+
+    init();
+  </script>
+</body>
+</html>
