@@ -2,6 +2,8 @@
 
 > Multi-tenant platform designed to automate audience targeting, campaign generation, commercial opportunity detection, and lead scoring.
 
+---
+
 ## Overview
 
 **MasterTech Growth OS** is an acquisition platform that decouples campaign generation and commercial intelligence from ad delivery channels. It ingests high-level business offers and transforms them into multi-channel campaigns (B2C & B2B) while evaluating inbound and detected business opportunities through a deterministic lead scoring algorithm.
@@ -10,57 +12,45 @@
 
 ## Architecture & System Design
 
-┌──────────────────────┐
-                     │   ENTERPRISE TENANT  │
-                     └──────────┬───────────┘
-                                │
-                                ▼
-                     ┌──────────────────────┐
-                     │     OFFER ENGINE     │
-                     │ Ingestion & Context  │
-                     └──────────┬───────────┘
-                                │
-                     ┌──────────┴───────────┐
-                     │  ASYNC DISPATCHER    │
-                     └──────────┬───────────┘
-                                │
-         ┌──────────────────────┴──────────────────────┐
-         ▼                                             ▼
-┌─────────────────┐                           ┌─────────────────┐
-│  B2C CAMPAIGNS  │                           │  B2B OUTREACH   │
-│  Social / Ads   │                           │  LinkedIn / CRM │
-└─────────────────┘                           └─────────────────┘
-                                │
-                                ▼
-                     ┌──────────────────────┐
-                     │  OPPORTUNITY ENGINE  │
-                     │    & LEAD SCORING    │
-                     └──────────────────────┘
+```mermaid
+graph TD
+    A[Enterprise Tenant] --> B[Offer Engine: Ingestion & Context]
+    B --> C[Async Dispatcher / Background Worker]
+    C --> D[B2C Campaigns: Social & Ads]
+    C --> E[B2B Outreach: LinkedIn & Direct]
+    D --> F[Opportunity Engine & Lead Scoring]
+    E --> F[Opportunity Engine & Lead Scoring]
+```
 
 ### Core Engines
 
-1. **Multi-Tenancy Isolation**: Logical separation across all models (`Tenant`, `Offer`, `Campaign`, `Lead`).
-2. **Offer Engine**: Converts business offers (product, location, audience, price, and target objective) into structured assets.
-3. **Decoupled Campaign Generation**: Asynchronous background generation producing tailored B2C and B2B marketing assets.
-4. **Opportunity & Scoring Engine**: Evaluates commercial leads using a weighted 100-point algorithm:
-   - Industry Match: **+20**
-   - Location Match: **+15**
-   - Detected Need: **+25**
-   - Qualified Budget: **+20**
-   - Prior Interaction: **+10**
-   - Favorable Timing: **+10**
+1. **Multi-Tenancy Isolation**: Strict logical data isolation across all relational models (`Tenant`, `Offer`, `Campaign`, `Lead`).
 
-   **Priority Tiers:**
-   - `90 - 100`: 🔥 **CRITICAL_HOT**
-   - `70 - 89`: 🟠 **HIGH**
-   - `40 - 69`: 🟡 **MEDIUM**
-   - `0 - 39`: ⚪ **LOW**
+2. **Offer Engine**: Converts business offers (product, location, target audience, price, and commercial objective) into actionable distribution assets.
+
+3. **Decoupled Campaign Generation**: Asynchronous background engine producing channel-specific B2C and B2B marketing assets.
+
+4. **Opportunity & Scoring Engine**: Evaluates commercial leads using a weighted 100-point deterministic algorithm:
+
+   - **Industry Match**: +20 pts
+   - **Location Match**: +15 pts
+   - **Detected Need**: +25 pts
+   - **Qualified Budget**: +20 pts
+   - **Prior Interaction**: +10 pts
+   - **Favorable Timing**: +10 pts
+
+### Priority Classification
+
+- **90 - 100**: `CRITICAL_HOT`
+- **70 - 89**: `HIGH`
+- **40 - 69**: `MEDIUM`
+- **0 - 39**: `LOW`
 
 ---
 
 ## Tech Stack
 
-- **Runtime**: Node.js v24 + TypeScript (executed via `tsx`)
+- **Runtime**: Node.js v24 + TypeScript (powered by `tsx`)
 - **Web Framework**: Express.js
 - **ORM & Database**: Prisma ORM with SQLite (PostgreSQL compatible)
 - **Architecture**: Modular Monorepo pattern
@@ -70,69 +60,116 @@
 ## Quickstart
 
 ### Prerequisites
+
 - Node.js 18+
 - npm
 
-### Installation & Run
+### Installation & Execution
 
 1. Clone the repository:
-   ```bash
-   git clone [https://github.com/andres-olguin/mastertech-growth-os.git](https://github.com/andres-olguin/mastertech-growth-os.git)
-   cd mastertech-growth-os
 
-Install dependencies:
+```bash
+git clone https://github.com/andres-olguin/mastertech-growth-os.git
+cd mastertech-growth-os
+```
 
-Bash
+2. Install dependencies:
+
+```bash
 npm install
-Generate Prisma client & sync schema:
+```
 
-Bash
+3. Synchronize database schema:
+
+```bash
 npx prisma db push --schema=packages/database/prisma/schema.prisma
-Start API server:
+```
 
-Bash
+4. Start API server:
+
+```bash
 npm run dev:api
-Server will listen on http://localhost:4000.
+```
 
-API Reference
-1. Tenants
-POST /api/tenants
-
-Body: {"name": "String", "slug": "String"}
-
-2. Offers & Campaign Generation
-POST /api/tenants/:tenantId/offers
-
-Body: {"title": "String", "targetCity": "String", "price": Number, "audience": "String", "objective": "String"}
-
-Dispatches background generation of B2C and B2B campaigns.
-
-GET /api/tenants/:tenantId/campaigns
-
-Retrieves all generated campaigns for the tenant.
-
-3. Opportunity Engine & Lead Scoring
-POST /api/tenants/:tenantId/leads
-
-Submits a prospective company and computes its weighted lead score and priority tier.
-
-GET /api/tenants/:tenantId/leads
-
-Returns tenant leads ranked by score in descending order.
-
-License
-MIT
-
-
-Guarda el archivo con `Ctrl + S`.
+The server will listen on `http://localhost:4000`.
 
 ---
 
-### Paso 3: Subir todos los cambios a GitHub
+## API Reference
 
-En tu terminal de PowerShell, ejecuta:
+### 1. Tenants
 
-```powershell
-git add .
-git commit -m "feat: complete lead scoring engine and publish comprehensive documentation"
-git push origin main
+- `POST /api/tenants`
+
+  Creates an isolated enterprise tenant.
+
+  **Payload:**
+
+```json
+{
+  "name": "Productora Viña Eventos",
+  "slug": "vina-eventos"
+}
+```
+
+---
+
+### 2. Offers & Campaign Generation
+
+- `POST /api/tenants/:tenantId/offers`
+
+  Ingests an offer and triggers asynchronous campaign creation.
+
+  **Payload:**
+
+```json
+{
+  "title": "Banquetería Matrimonial Premium",
+  "targetCity": "Viña del Mar",
+  "price": 45000,
+  "audience": "Parejas, Centros de Eventos",
+  "objective": "Generar cotizaciones"
+}
+```
+
+- `GET /api/tenants/:tenantId/campaigns`
+
+  Fetches all generated campaigns for the tenant.
+
+---
+
+### 3. Opportunity Engine & Lead Scoring
+
+- `POST /api/tenants/:tenantId/leads`
+
+  Ingests a prospect, computes the weighted score, and assigns priority tier.
+
+  **Payload:**
+
+```json
+{
+  "companyName": "Hotel Mar del Plata Eventos",
+  "contactEmail": "gerencia@hotelmardelplata.cl",
+  "city": "Viña del Mar",
+  "industry": "Hotelería y Turismo",
+  "budget": 3500000,
+  "criteria": {
+    "industryMatch": true,
+    "locationMatch": true,
+    "needDetected": true,
+    "budgetQualified": true,
+    "priorEngagement": false,
+    "favorableTiming": true
+  }
+}
+```
+
+- `GET /api/tenants/:tenantId/leads`
+
+  Returns tenant leads ranked by score in descending order.
+
+---
+
+## License
+
+MIT
