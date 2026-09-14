@@ -81,7 +81,7 @@ async function runAutopilotCycle() {
 
         const lead = await prisma.lead.create({
           data: {
-            tenantId: tenant.id,
+            tenant: { connect: { id: tenant.id } },
             companyName: p.name,
             contactEmail: p.email || `contacto@${p.name.toLowerCase().replace(/[^a-z0-9]/g, '')}.cl`,
             city: p.city,
@@ -104,7 +104,7 @@ async function runAutopilotCycle() {
     for (const post of posts) {
       await prisma.campaign.create({
         data: {
-          tenantId: tenant.id,
+          tenant: { connect: { id: tenant.id } },
           channel: post.platform === 'LINKEDIN' ? 'B2B_LINKEDIN_OUTREACH' : 'B2C_INSTAGRAM_ORGANIC',
           headline: post.title,
           copy: `${post.copy}\n\n${post.hashtags.join(' ')}\n\nCTA: ${post.ctaUrl}`,
