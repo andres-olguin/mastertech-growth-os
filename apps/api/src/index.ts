@@ -8,6 +8,7 @@ import { calculateLeadScore, ScoringCriteria } from './scoring';
 import { addSSEClient, broadcastEvent } from './events';
 import { scrapeLocalProspects } from './scraper';
 import { generateOrganicCampaigns } from './contentEngine';
+import { startAutopilot } from './autopilot';
 
 dotenv.config();
 
@@ -299,6 +300,9 @@ app.post('/api/content/generate', (req: Request, res: Response) => {
   res.json({ serviceType, city, posts });
 });
 
+// Inicialización del Servidor y arranque del Autopilot Engine
 app.listen(PORT, () => {
   console.log(`[MasterTech Growth OS] API y Dashboard escuchando en http://localhost:${PORT}`);
+  // Inicia el motor autónomo para ejecutar rondas continuas cada 3 minutos
+  startAutopilot(3);
 });
