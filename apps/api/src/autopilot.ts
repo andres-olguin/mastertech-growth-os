@@ -30,7 +30,7 @@ export function startAutopilot(intervalMinutes: number = 3) {
 
   console.log(`[Autopilot Growth OS] Activo. Ciclo continuo ejecutándose cada ${intervalMinutes} minutos.`);
 
-  // Ejecución inmediata inicial
+  // Ejecución inmediata del primer ciclo al iniciar el servidor
   runAutopilotCycle();
 
   // Bucle infinito programado
@@ -55,7 +55,7 @@ async function runAutopilotCycle() {
 
     console.log(`[Autopilot Cycle] Escaneando nicho: "${query}" en ${city}...`);
 
-    // 1. Detección y Scoring Automático
+    // 1. Detección y Calificación Automática de Prospectos
     const rawProspects = await scrapeLocalProspects(query, city);
     let newLeadsCount = 0;
 
@@ -98,8 +98,21 @@ async function runAutopilotCycle() {
       }
     }
 
-    // 2. Generación y almacenamiento de campañas de difusión
+    // 2. Generación automática, persistencia en Prisma y difusión multicanal de contenidos
     const posts = generateOrganicCampaigns(service, city);
+
+    for (const post of posts) {
+      await prisma.campaign.create({
+        data: {
+          tenantId: tenant.id,
+          channel: post.platform === 'LINKEDIN' ? 'B2B_LINKEDIN_OUTREACH' : 'B2C_INSTAGRAM_ORGANIC',
+          headline: post.title,
+          copy: `${post.copy}\n\n${post.hashtags.join(' ')}\n\nCTA: ${post.ctaUrl}`,
+          status: 'READY_TO_PUBLISH'
+        }
+      });
+    }
+
     broadcastEvent('campaign_generated', {
       tenantId: tenant.id,
       service,
@@ -108,7 +121,7 @@ async function runAutopilotCycle() {
       timestamp: new Date()
     });
 
-    console.log(`[Autopilot Cycle Finalizado] ${newLeadsCount} prospectos agregados | Campañas generadas para ${city}.`);
+    console.log(`[Autopilot Cycle Finalizado] ${newLeadsCount} prospectos agregados | ${posts.length} campañas guardadas en DB para ${city}.`);
   } catch (err: any) {
     console.error('[Autopilot Error]:', err.message);
   }
