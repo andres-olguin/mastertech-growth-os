@@ -308,11 +308,14 @@
           pitch = `Estimado equipo de ${l.companyName}: Les saluda Patricio de Gran Royal Producciones. Ponemos a su disposición nuestra cobertura de eventos corporativos, congresos y cenas de fin de año en Viña del Mar y Valparaíso. ¿Podríamos coordinar una breve reunión o cotización sin costo?`;
         }
 
+        // WhatsApp libre (permite elegir o pegar el contacto en la app)
         const waText = encodeURIComponent(pitch);
-        const waLink = `https://wa.me/56981377642?text=${waText}`;
+        const waLink = `https://api.whatsapp.com/send?text=${waText}`;
+
+        // Redacción directa en Gmail Web para evitar el cuadro de diálogo de Windows
         const mailSubject = encodeURIComponent(`Propuesta de Producción de Eventos para ${l.companyName} — Gran Royal`);
         const mailBody = encodeURIComponent(`${pitch}\n\nContacto directo:\nPatricio - Gran Royal Producciones\nWhatsApp: +56 9 8137 7642\nhttps://granroyal.cl`);
-        const mailLink = `mailto:${l.contactEmail}?subject=${mailSubject}&body=${mailBody}`;
+        const gmailWebLink = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(l.contactEmail)}&su=${mailSubject}&body=${mailBody}`;
 
         return `
           <tr class="hover:bg-slate-800/30 transition">
@@ -331,7 +334,7 @@
                 <a href="${waLink}" target="_blank" title="Enviar propuesta por WhatsApp" class="inline-flex items-center gap-1 bg-emerald-600/20 hover:bg-emerald-600/40 text-emerald-400 border border-emerald-500/40 text-xs px-2.5 py-1 rounded transition font-medium">
                   WhatsApp
                 </a>
-                <a href="${mailLink}" target="_blank" title="Enviar correo formal" class="inline-flex items-center gap-1 bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 border border-blue-500/40 text-xs px-2.5 py-1 rounded transition font-medium">
+                <a href="${gmailWebLink}" target="_blank" title="Redactar en Gmail" class="inline-flex items-center gap-1 bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 border border-blue-500/40 text-xs px-2.5 py-1 rounded transition font-medium">
                   Email
                 </a>
               </div>

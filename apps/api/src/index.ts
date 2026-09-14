@@ -8,7 +8,7 @@ import { calculateLeadScore, ScoringCriteria } from './scoring';
 import { addSSEClient, broadcastEvent } from './events';
 import { scrapeLocalProspects } from './scraper';
 import { generateOrganicCampaigns } from './contentEngine';
-import { startAutopilot } from './autopilot';
+import { startAutopilot, stopAutopilot, getAutopilotStatus } from './autopilot';
 
 dotenv.config();
 
@@ -19,28 +19,49 @@ const PORT = process.env.PORT || 4000;
 app.use(cors());
 app.use(express.json());
 
-// Servir frontend estático
+// Archivos estáticos
 app.use(express.static(path.join(process.cwd(), 'apps/web')));
 
-// Ruta principal para servir el Dashboard renderizado
+// Dashboard principal
 app.get('/', (req: Request, res: Response) => {
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.sendFile(path.join(process.cwd(), 'apps/web/index.html'));
 });
 
-// Ruta pública de captación y cotización para Gran Royal
+// Landing general de cotizaciones VIP
 app.get('/cotizar/gran-royal', (req: Request, res: Response) => {
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.sendFile(path.join(process.cwd(), 'apps/web/cotizar.html'));
 });
 
-// 1. Healthcheck
+// Landing express Fiestas Patrias 2026
+app.get('/fiestas-patrias', (req: Request, res: Response) => {
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.sendFile(path.join(process.cwd(), 'apps/web/cotizar-18.html'));
+});
+
+// Control manual del Autopilot (Start / Stop)
+app.get('/api/autopilot/status', (req: Request, res: Response) => {
+  res.json({ active: getAutopilotStatus() });
+});
+
+app.post('/api/autopilot/start', (req: Request, res: Response) => {
+  const started = startAutopilot(2); // 2 minutos por ciclo para máxima actividad
+  res.json({ message: 'Autopilot encendido', active: true });
+});
+
+app.post('/api/autopilot/stop', (req: Request, res: Response) => {
+  const stopped = stopAutopilot();
+  res.json({ message: 'Autopilot pausado', active: false });
+});
+
+// Healthcheck
 app.get('/health', (req: Request, res: Response) => {
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
   res.json({ status: 'ok', service: 'MasterTech Growth OS - Core API', timestamp: new Date() });
 });
 
-// 2. Canal de eventos en tiempo real (Server-Sent Events)
+// Stream SSE
 app.get('/api/events', (req: Request, res: Response) => {
   res.setHeader('Content-Type', 'text/event-stream; charset=utf-8');
   res.setHeader('Cache-Control', 'no-cache');
@@ -51,7 +72,7 @@ app.get('/api/events', (req: Request, res: Response) => {
   res.write(`data: ${JSON.stringify({ type: 'CONNECTED', message: 'Conectado a Growth OS Live Stream' })}\n\n`);
 });
 
-// 3. Tenants
+// Tenants
 app.get('/api/tenants', async (req: Request, res: Response) => {
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
   try {
@@ -76,7 +97,7 @@ app.post('/api/tenants', async (req: Request, res: Response) => {
   }
 });
 
-// 4. Ingesta de Ofertas y Despacho de Campañas
+// Ingesta de Ofertas
 app.post('/api/tenants/:tenantId/offers', async (req: Request, res: Response) => {
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
   const { tenantId } = req.params;
@@ -124,7 +145,7 @@ app.post('/api/tenants/:tenantId/offers', async (req: Request, res: Response) =>
   }
 });
 
-// 5. Campañas generadas por Tenant
+// Campañas
 app.get('/api/tenants/:tenantId/campaigns', async (req: Request, res: Response) => {
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
   const { tenantId } = req.params;
@@ -146,7 +167,7 @@ app.get('/api/tenants/:tenantId/campaigns', async (req: Request, res: Response) 
   }
 });
 
-// 6. Opportunity Engine: Ingesta y Calificación de Leads
+// Leads
 app.post('/api/tenants/:tenantId/leads', async (req: Request, res: Response) => {
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
   const { tenantId } = req.params;
@@ -184,8 +205,7 @@ app.post('/api/tenants/:tenantId/leads', async (req: Request, res: Response) => 
 
     const lead = await prisma.lead.create({
       data: {
-        tenantId: resolvedTenantId,
-        campaignId: campaignId || null,
+        tenant: { connect: { id: resolvedTenantId } },
         companyName,
         contactEmail,
         city,
@@ -208,7 +228,6 @@ app.post('/api/tenants/:tenantId/leads', async (req: Request, res: Response) => 
   }
 });
 
-// 7. Ranking de Leads por Tenant
 app.get('/api/tenants/:tenantId/leads', async (req: Request, res: Response) => {
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
   const { tenantId } = req.params;
@@ -229,7 +248,7 @@ app.get('/api/tenants/:tenantId/leads', async (req: Request, res: Response) => {
   }
 });
 
-// 8. Prospección Local Gratuita (Outbound Scraper)
+// Prospección manual
 app.post('/api/tenants/:tenantId/prospect', async (req: Request, res: Response) => {
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
   const { tenantId } = req.params;
@@ -263,7 +282,7 @@ app.post('/api/tenants/:tenantId/prospect', async (req: Request, res: Response) 
 
       const lead = await prisma.lead.create({
         data: {
-          tenantId: resolvedTenantId,
+          tenant: { connect: { id: resolvedTenantId } },
           companyName: p.name,
           contactEmail: p.email || 'contacto@empresa.cl',
           city: p.city,
@@ -288,7 +307,7 @@ app.post('/api/tenants/:tenantId/prospect', async (req: Request, res: Response) 
   }
 });
 
-// 9. Generador de Contenido Orgánico para Redes
+// Generador de Contenido
 app.post('/api/content/generate', (req: Request, res: Response) => {
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
   const { serviceType, city } = req.body;
@@ -300,9 +319,8 @@ app.post('/api/content/generate', (req: Request, res: Response) => {
   res.json({ serviceType, city, posts });
 });
 
-// Inicialización del Servidor y arranque del Autopilot Engine
 app.listen(PORT, () => {
   console.log(`[MasterTech Growth OS] API y Dashboard escuchando en http://localhost:${PORT}`);
-  // Inicia el motor autónomo para ejecutar rondas continuas cada 3 minutos
-  startAutopilot(3);
+  // Iniciar autopilot inmediato cada 2 minutos
+  startAutopilot(2);
 });
