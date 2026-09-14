@@ -53,6 +53,24 @@ async function runAutopilotCycle() {
       return;
     }
 
+    // Asegurar una oferta base para cumplir la restricción obligatoria del esquema Prisma
+    let baseOffer = await prisma.offer.findFirst({
+      where: { tenantId: tenant.id }
+    });
+
+    if (!baseOffer) {
+      baseOffer = await prisma.offer.create({
+        data: {
+          tenantId: tenant.id,
+          title: 'Producción Integral de Eventos y Galas VIP',
+          targetCity: city,
+          price: 3500000,
+          audience: 'Colegios, Empresas y Parejas de Novios',
+          objective: 'Captación multicanal automática vía WhatsApp'
+        }
+      });
+    }
+
     console.log(`[Autopilot Cycle] Escaneando nicho: "${query}" en ${city}...`);
 
     // 1. Detección y Calificación Automática de Prospectos
@@ -98,13 +116,14 @@ async function runAutopilotCycle() {
       }
     }
 
-    // 2. Generación automática, persistencia en Prisma y difusión multicanal de contenidos
+    // 2. Generación automática, persistencia en Prisma conectando tenant y offer
     const posts = generateOrganicCampaigns(service, city);
 
     for (const post of posts) {
       await prisma.campaign.create({
         data: {
           tenant: { connect: { id: tenant.id } },
+          offer: { connect: { id: baseOffer.id } },
           channel: post.platform === 'LINKEDIN' ? 'B2B_LINKEDIN_OUTREACH' : 'B2C_INSTAGRAM_ORGANIC',
           headline: post.title,
           copy: `${post.copy}\n\n${post.hashtags.join(' ')}\n\nCTA: ${post.ctaUrl}`,
