@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MasterTech Growth OS — Live Dashboard</title>
 
-  <!-- Favicon MasterTech OS SVG Embebido (Formato URI Seguro) -->
+  <!-- Favicon SVG Embebido -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230f172a'/%3E%3Cpath d='M25 75 L25 25 L45 55 L65 25 L65 75' stroke='%2338bdf8' stroke-width='10' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3Ccircle cx='80' cy='30' r='6' fill='%2310b981'/%3E%3C/svg%3E">
 
   <script src="https://cdn.tailwindcss.com"></script>
@@ -23,13 +23,25 @@
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen font-sans antialiased">
   <header class="border-b border-slate-800 bg-slate-900/60 backdrop-blur sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex flex-wrap justify-between items-center gap-4">
       <div class="flex items-center gap-3">
-        <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span id="liveStatusPulse" class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
         <h1 class="text-xl font-bold tracking-tight">MasterTech Growth OS</h1>
-        <span class="text-xs bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full border border-slate-700">Realtime Core</span>
+        <span class="text-xs bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full border border-slate-700">Autopilot 24/7</span>
       </div>
-      <div class="flex items-center gap-4">
+
+      <!-- BOTÓN DE PAUSA / REANUDAR AUTOPILOT -->
+      <div class="flex items-center gap-3">
+        <button id="btnAutopilotToggle" onclick="toggleAutopilot()" class="text-xs font-semibold px-4 py-2 rounded-lg bg-rose-500/20 text-rose-300 border border-rose-500/40 hover:bg-rose-500/30 transition flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-rose-400"></span>
+          <span id="btnAutopilotText">Pausar Autopilot</span>
+        </button>
+
+        <a href="/fiestas-patrias" target="_blank" class="text-xs font-semibold px-3 py-2 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 transition flex items-center gap-1.5">
+          <span>🇨🇱 Ver Landing 18 Septiembre</span>
+          <span class="text-[10px]">&rarr;</span>
+        </a>
+
         <select id="tenantSelect" class="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-blue-500">
           <option value="">Cargando tenants...</option>
         </select>
@@ -53,7 +65,7 @@
         <form id="prospectForm" onsubmit="runProspecting(event)" class="space-y-3">
           <div>
             <label class="block text-xs text-slate-400 mb-1">Nicho / Rubro Objetivo</label>
-            <input type="text" id="prospectQuery" required placeholder="Ej: Colegios particulares, Clínicas, Empresas" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-500">
+            <input type="text" id="prospectQuery" required placeholder="Ej: Empresas, Clínicas, Faenas, Colegios" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-500">
           </div>
           <div>
             <label class="block text-xs text-slate-400 mb-1">Comuna Objetivo</label>
@@ -77,7 +89,7 @@
         <form id="offerForm" onsubmit="submitOffer(event)" class="space-y-3">
           <div>
             <label class="block text-xs text-slate-400 mb-1">Título de la Oferta</label>
-            <input type="text" id="offerTitle" required placeholder="Ej: Matrimonios Premium 2026" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+            <input type="text" id="offerTitle" required placeholder="Ej: Asados Fiestas Patrias 2026" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
           </div>
           <div class="grid grid-cols-2 gap-3">
             <div>
@@ -86,16 +98,16 @@
             </div>
             <div>
               <label class="block text-xs text-slate-400 mb-1">Precio Base ($)</label>
-              <input type="number" id="offerPrice" placeholder="5000000" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+              <input type="number" id="offerPrice" placeholder="38990" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
             </div>
           </div>
           <div>
             <label class="block text-xs text-slate-400 mb-1">Audiencia Objetivo</label>
-            <input type="text" id="offerAudience" required placeholder="Parejas de novios, Familias" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+            <input type="text" id="offerAudience" required placeholder="Empresas, Oficinas, Faenas" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
           </div>
           <div>
             <label class="block text-xs text-slate-400 mb-1">Objetivo de Conversión</label>
-            <input type="text" id="offerObjective" required placeholder="Cotizar fecha por WhatsApp" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+            <input type="text" id="offerObjective" required placeholder="Cotizar menú 18 Septiembre por WhatsApp" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
           </div>
           <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium py-2 rounded-lg text-sm transition">
             Lanzar Campañas Automáticas
@@ -124,23 +136,23 @@
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label class="block text-xs text-slate-400 mb-1">Industria / Evento</label>
-              <input type="text" id="leadIndustry" required placeholder="Matrimonios" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+              <input type="text" id="leadIndustry" required placeholder="Celebración Fiestas Patrias" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
             </div>
             <div>
               <label class="block text-xs text-slate-400 mb-1">Presupuesto ($)</label>
-              <input type="number" id="leadBudget" placeholder="4500000" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+              <input type="number" id="leadBudget" placeholder="1500000" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
             </div>
           </div>
 
           <div class="pt-2">
             <span class="block text-xs text-slate-400 mb-2">Criterios de Ponderación:</span>
             <div class="grid grid-cols-2 gap-2 text-xs text-slate-300">
-              <label class="flex items-center gap-1.5"><input type="checkbox" id="critIndustry" class="rounded bg-slate-800"> Industria (+20)</label>
-              <label class="flex items-center gap-1.5"><input type="checkbox" id="critLocation" class="rounded bg-slate-800"> Ubicación (+15)</label>
-              <label class="flex items-center gap-1.5"><input type="checkbox" id="critNeed" class="rounded bg-slate-800"> Necesidad (+25)</label>
-              <label class="flex items-center gap-1.5"><input type="checkbox" id="critBudget" class="rounded bg-slate-800"> Presupuesto (+20)</label>
+              <label class="flex items-center gap-1.5"><input type="checkbox" id="critIndustry" checked class="rounded bg-slate-800"> Industria (+20)</label>
+              <label class="flex items-center gap-1.5"><input type="checkbox" id="critLocation" checked class="rounded bg-slate-800"> Ubicación (+15)</label>
+              <label class="flex items-center gap-1.5"><input type="checkbox" id="critNeed" checked class="rounded bg-slate-800"> Necesidad (+25)</label>
+              <label class="flex items-center gap-1.5"><input type="checkbox" id="critBudget" checked class="rounded bg-slate-800"> Presupuesto (+20)</label>
               <label class="flex items-center gap-1.5"><input type="checkbox" id="critEngagement" class="rounded bg-slate-800"> Interacción (+10)</label>
-              <label class="flex items-center gap-1.5"><input type="checkbox" id="critTiming" class="rounded bg-slate-800"> Timing (+10)</label>
+              <label class="flex items-center gap-1.5"><input type="checkbox" id="critTiming" checked class="rounded bg-slate-800"> Timing 18 Sept (+10)</label>
             </div>
           </div>
 
@@ -158,7 +170,7 @@
       <section class="bg-slate-900/50 border border-slate-800 rounded-xl p-5 shadow-sm">
         <div class="flex justify-between items-center mb-4">
           <div class="flex items-center gap-2">
-            <h2 class="text-sm font-semibold text-slate-200 uppercase tracking-wider">Publicador Orgánico de Redes Sociales</h2>
+            <h2 class="text-sm font-semibold text-slate-200 uppercase tracking-wider">Publicador Orgánico — Fiestas Patrias 2026</h2>
             <span class="text-[10px] bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/20">Tráfico $0</span>
           </div>
           <button onclick="generatePosts()" class="bg-blue-600 hover:bg-blue-500 text-xs text-white font-medium px-3 py-1.5 rounded-lg transition">
@@ -168,19 +180,23 @@
         
         <div class="grid grid-cols-2 gap-3 mb-4">
           <div>
-            <label class="block text-xs text-slate-400 mb-1">Tipo de Evento</label>
+            <label class="block text-xs text-slate-400 mb-1">Menú / Servicio</label>
             <select id="contentService" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500">
-              <option value="Matrimonios y Bodas">Matrimonios y Bodas</option>
+              <option value="Gran Fonda Parrillera ($38.990 p/p)">Gran Fonda Parrillera ($38.990 p/p)</option>
+              <option value="Fonda en la Oficina ($20.000 p/p)">Fonda en la Oficina ($20.000 p/p)</option>
+              <option value="Pausa Criolla ($10.000 p/p)">Pausa Criolla ($10.000 p/p)</option>
               <option value="Graduaciones y Galas">Graduaciones y Galas</option>
-              <option value="Eventos Corporativos">Eventos Corporativos</option>
+              <option value="Matrimonios y Bodas">Matrimonios y Bodas</option>
             </select>
           </div>
           <div>
             <label class="block text-xs text-slate-400 mb-1">Ubicación</label>
             <select id="contentCity" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500">
               <option value="Viña del Mar">Viña del Mar</option>
-              <option value="Valparaíso">Valparaíso</option>
               <option value="Concón">Concón</option>
+              <option value="Valparaíso">Valparaíso</option>
+              <option value="Quilpué">Quilpué</option>
+              <option value="Villa Alemana">Villa Alemana</option>
             </select>
           </div>
         </div>
@@ -211,7 +227,7 @@
                 <th class="py-3 px-4 text-center">Score</th>
                 <th class="py-3 px-4 text-center">Prioridad</th>
                 <th class="py-3 px-4 text-center">Estado</th>
-                <th class="py-3 px-4 text-center">Despachar Propuesta</th>
+                <th class="py-3 px-4 text-center">Despachar Propuesta 18 Sept</th>
               </tr>
             </thead>
             <tbody id="leadsTableBody" class="divide-y divide-slate-800/60">
@@ -239,10 +255,50 @@
   <script>
     const API_URL = 'http://localhost:4000';
     let currentTenantId = '';
+    let isAutopilotRunning = true;
 
     async function init() {
       await loadTenants();
+      await checkAutopilotStatus();
       setupSSE();
+    }
+
+    async function checkAutopilotStatus() {
+      try {
+        const res = await fetch(`${API_URL}/api/autopilot/status`);
+        const data = await res.json();
+        updateAutopilotUI(data.active);
+      } catch (err) {
+        console.warn('Error verificando estado autopilot:', err);
+      }
+    }
+
+    async function toggleAutopilot() {
+      const endpoint = isAutopilotRunning ? '/api/autopilot/stop' : '/api/autopilot/start';
+      try {
+        const res = await fetch(`${API_URL}${endpoint}`, { method: 'POST' });
+        const data = await res.json();
+        updateAutopilotUI(data.active);
+      } catch (err) {
+        alert('Error cambiando estado del autopilot.');
+      }
+    }
+
+    function updateAutopilotUI(active) {
+      isAutopilotRunning = active;
+      const btn = document.getElementById('btnAutopilotToggle');
+      const txt = document.getElementById('btnAutopilotText');
+      const pulse = document.getElementById('liveStatusPulse');
+
+      if (active) {
+        btn.className = 'text-xs font-semibold px-4 py-2 rounded-lg bg-rose-500/20 text-rose-300 border border-rose-500/40 hover:bg-rose-500/30 transition flex items-center gap-2';
+        btn.innerHTML = '<span class="w-2 h-2 rounded-full bg-rose-400"></span><span>Pausar Autopilot</span>';
+        pulse.className = 'w-3 h-3 rounded-full bg-emerald-500 animate-pulse';
+      } else {
+        btn.className = 'text-xs font-semibold px-4 py-2 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30 transition flex items-center gap-2';
+        btn.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-400"></span><span>Reanudar Autopilot</span>';
+        pulse.className = 'w-3 h-3 rounded-full bg-amber-500';
+      }
     }
 
     async function loadTenants() {
@@ -299,22 +355,13 @@
         else if (l.priority === 'HIGH') badgeColor = 'bg-orange-500/20 text-orange-400 border border-orange-500/30';
         else if (l.priority === 'MEDIUM') badgeColor = 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30';
 
-        const isSchool = l.industry.toLowerCase().includes('colegio') || l.companyName.toLowerCase().includes('school') || l.companyName.toLowerCase().includes('colegio');
-        
-        let pitch = '';
-        if (isSchool) {
-          pitch = `Estimado equipo de ${l.companyName}: Les escribe Patricio desde Gran Royal Producciones (Viña del Mar). Queremos presentarles nuestra propuesta 'Todo Incluido' para su Fiesta de Graduación y Gala 2026/2027 (Catering premium, Salones exclusivos en la V Región, DJ, Plataforma 360° y Cabina Fotográfica). ¿Con quién podríamos coordinar el envío del catálogo detallado?`;
-        } else {
-          pitch = `Estimado equipo de ${l.companyName}: Les saluda Patricio de Gran Royal Producciones. Ponemos a su disposición nuestra cobertura de eventos corporativos, congresos y cenas de fin de año en Viña del Mar y Valparaíso. ¿Podríamos coordinar una breve reunión o cotización sin costo?`;
-        }
+        const pitch = `Estimado equipo de ${l.companyName}: Les saluda Patricio desde Gran Royal Banquetería (Viña del Mar). Quedan los últimos días para coordinar las celebraciones de Fiestas Patrias en su organización. Ponemos a su disposición nuestro servicio 'Llave en Mano' en faena o dependencia laboral con traslado y montaje GRATIS en la V Región:\n• Gran Fonda Parrillera con Asado al Carbón ($38.990 + IVA p/p)\n• Fonda en la Oficina / Almuerzo Criollo ($20.000 + IVA p/p)\n• Pausa Criolla / Cóctel Dieciochero ($10.000 + IVA p/p)\nFacturación electrónica inmediata. ¿Les comparto el catálogo oficial para asegurar la fecha de su equipo?`;
 
-        // WhatsApp libre (permite elegir o pegar el contacto en la app)
         const waText = encodeURIComponent(pitch);
         const waLink = `https://api.whatsapp.com/send?text=${waText}`;
 
-        // Redacción directa en Gmail Web para evitar el cuadro de diálogo de Windows
-        const mailSubject = encodeURIComponent(`Propuesta de Producción de Eventos para ${l.companyName} — Gran Royal`);
-        const mailBody = encodeURIComponent(`${pitch}\n\nContacto directo:\nPatricio - Gran Royal Producciones\nWhatsApp: +56 9 8137 7642\nhttps://granroyal.cl`);
+        const mailSubject = encodeURIComponent(`Propuesta Fiestas Patrias 2026 para ${l.companyName} — Gran Royal Banquetería`);
+        const mailBody = encodeURIComponent(`${pitch}\n\nAtención y reservas directas:\nPatricio - Gran Royal Banquetería\nWhatsApp: +56 9 8137 7642\nhttps://granroyal.cl`);
         const gmailWebLink = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(l.contactEmail)}&su=${mailSubject}&body=${mailBody}`;
 
         return `
@@ -374,6 +421,10 @@
         if (data.tenantId === currentTenantId) loadLeads();
       });
       eventSource.addEventListener('tenant_created', () => loadTenants());
+      eventSource.addEventListener('autopilot_status', (e) => {
+        const data = JSON.parse(e.data);
+        updateAutopilotUI(data.active);
+      });
     }
 
     async function runProspecting(e) {
@@ -513,7 +564,7 @@
         const link = document.createElement('a');
         
         link.setAttribute('href', url);
-        link.setAttribute('download', `leads_gran_royal_${new Date().toISOString().slice(0, 10)}.csv`);
+        link.setAttribute('download', `leads_gran_royal_18sept_${new Date().toISOString().slice(0, 10)}.csv`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
