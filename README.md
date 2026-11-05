@@ -74,6 +74,6 @@ La documentación histórica utiliza reglas ponderadas para industria, ubicació
 
 ## Roadmap y fuentes
 
-[Revisión de ingeniería](docs/ENGINEERING_ROADMAP_2026-11-04.md) · [Arquitectura y escalabilidad](docs/ARCHITECTURE_SCALABILITY_2026-11-04.md).
+[Revisión de ingeniería](docs/ENGINEERING_REVIEW_2026-11-04.md) · [Arquitectura y escalabilidad](docs/ARCHITECTURE_SCALABILITY_2026-11-04.md).
 
 **Estado corporativo:** iniciativa técnica de MasterTech SpA sin ingresos, clientes o efectividad de campañas confirmados por este repositorio.
