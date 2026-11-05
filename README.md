@@ -1,175 +1,79 @@
-# MasterTech Growth OS — Acquisition & Distribution Engine
+# MasterTech Growth OS — Automatización y análisis comercial
 
-> Multi-tenant platform designed to automate audience targeting, campaign generation, commercial opportunity detection, and lead scoring.
+**Prototipo de ingeniería de MasterTech SpA** para gestionar ofertas, construir activos de campañas y clasificar oportunidades mediante un modelo de puntuación determinista. Se organiza como monorepositorio con API TypeScript/Express, Prisma y herramientas de ejecución locales.
 
----
+> **Estado:** investigación y desarrollo. Aunque el código define entidades como `Tenant`, `Offer`, `Campaign` y `Lead`, no se ha validado aquí el aislamiento multiempresa en todas las rutas, la entrega efectiva en plataformas publicitarias ni la existencia de resultados comerciales. **No utilizar datos reales de prospectos o enviar campañas automáticamente sin permiso.**
 
-## Overview
+## Qué pretende resolver
 
-**MasterTech Growth OS** is an acquisition platform that decouples campaign generation and commercial intelligence from ad delivery channels. It ingests high-level business offers and transforms them into multi-channel campaigns (B2C & B2B) while evaluating inbound and detected business opportunities through a deterministic lead scoring algorithm.
+Las empresas necesitan organizar propuestas, canales y oportunidades comerciales sin mezclar datos de distintos clientes. Growth OS explora un flujo que parte de una oferta y produce representaciones de campañas y puntuaciones de leads, separando la generación interna de activos de los envíos hacia terceros.
 
----
+## Componentes del repositorio
 
-## Architecture & System Design
+| Ruta | Función |
+|---|---|
+| [`apps/`](apps/) | Aplicaciones, incluidos experimentos de API y escritorio |
+| [`packages/`](packages/) | Módulos compartidos y configuración de persistencia |
+| [`packages/database/prisma/schema.prisma`](packages/database/prisma/schema.prisma) | Modelo de datos de Prisma |
+| [`docker-compose.yml`](docker-compose.yml) | Servicios locales de laboratorio |
+| [`docs/`](docs/) | Plan de producto, auditoría y evolución |
+| [`package.json`](package.json) | Comandos y dependencias Node.js |
+
+## Arquitectura experimental
 
 ```mermaid
-graph TD
-    A[Enterprise Tenant] --> B[Offer Engine: Ingestion & Context]
-    B --> C[Async Dispatcher / Background Worker]
-    C --> D[B2C Campaigns: Social & Ads]
-    C --> E[B2B Outreach: LinkedIn & Direct]
-    D --> F[Opportunity Engine & Lead Scoring]
-    E --> F[Opportunity Engine & Lead Scoring]
+flowchart TD
+    A[Oferta de empresa / tenant] --> B[Servicio de ofertas]
+    B --> C[Generación de assets de campaña]
+    C --> D[Canales propuestos]
+    A --> E[Registro de oportunidades]
+    E --> F[Scoring de criterios ponderados]
+    D -.-> G[Integraciones externas aún por validar]
 ```
 
-### Core Engines
+**Importante:** un asset de campaña generado internamente no es evidencia de anuncio publicado, mensaje enviado o venta realizada.
 
-1. **Multi-Tenancy Isolation**: Strict logical data isolation across all relational models (`Tenant`, `Offer`, `Campaign`, `Lead`).
+## Inicio de desarrollo local
 
-2. **Offer Engine**: Converts business offers (product, location, target audience, price, and commercial objective) into actionable distribution assets.
-
-3. **Decoupled Campaign Generation**: Asynchronous background engine producing channel-specific B2C and B2B marketing assets.
-
-4. **Opportunity & Scoring Engine**: Evaluates commercial leads using a weighted 100-point deterministic algorithm:
-
-   - **Industry Match**: +20 pts
-   - **Location Match**: +15 pts
-   - **Detected Need**: +25 pts
-   - **Qualified Budget**: +20 pts
-   - **Prior Interaction**: +10 pts
-   - **Favorable Timing**: +10 pts
-
-### Priority Classification
-
-- **90 - 100**: `CRITICAL_HOT`
-- **70 - 89**: `HIGH`
-- **40 - 69**: `MEDIUM`
-- **0 - 39**: `LOW`
-
----
-
-## Tech Stack
-
-- **Runtime**: Node.js v24 + TypeScript (powered by `tsx`)
-- **Web Framework**: Express.js
-- **ORM & Database**: Prisma ORM with SQLite (PostgreSQL compatible)
-- **Architecture**: Modular Monorepo pattern
-
----
-
-## Quickstart
-
-### Prerequisites
-
-- Node.js 18+
-- npm
-
-### Installation & Execution
-
-1. Clone the repository:
-
-```bash
-git clone https://github.com/andres-olguin/mastertech-growth-os.git
-cd mastertech-growth-os
-```
-
-2. Install dependencies:
+**Stack declarado:** Node.js, TypeScript/tsx, Express, Prisma con SQLite en el entorno de laboratorio y componentes de colas Redis/BullMQ. Las instrucciones existentes utilizan Node.js 24; fijar la versión y comprobar compatibilidad antes de integrarlo a CI.
 
 ```bash
 npm install
-```
-
-3. Synchronize database schema:
-
-```bash
 npx prisma db push --schema=packages/database/prisma/schema.prisma
-```
-
-4. Start API server:
-
-```bash
 npm run dev:api
 ```
 
-The server will listen on `http://localhost:4000`.
+La API se documenta originalmente en `http://localhost:4000`. Ejecutar `prisma db push` **únicamente con una base de pruebas o descartable**, no sobre datos de clientes ni entornos compartidos.
 
----
+**Estado de calidad actual:** en [`package.json`](package.json), `npm test` es todavía un comando placeholder que devuelve error. **No hay una suite automatizada verificada por ese comando**. Corresponde añadir pruebas antes de aceptar el prototipo como estable.
 
-## API Reference
+## Flujos HTTP descritos
 
-### 1. Tenants
+| Operación | Ruta propuesta |
+|---|---|
+| Crear tenant | `POST /api/tenants` |
+| Registrar oferta | `POST /api/tenants/:tenantId/offers` |
+| Consultar campañas | `GET /api/tenants/:tenantId/campaigns` |
+| Registrar oportunidad | `POST /api/tenants/:tenantId/leads` |
+| Consultar oportunidades | `GET /api/tenants/:tenantId/leads` |
 
-- `POST /api/tenants`
+La documentación de rutas refleja el diseño presente y debe contrastarse con controladores, estado real de los workers y pruebas de extremo a extremo. No garantiza que todas las operaciones funcionen sin configuración adicional.
 
-  Creates an isolated enterprise tenant.
+## Scoring de demostración
 
-  **Payload:**
+La documentación histórica utiliza reglas ponderadas para industria, ubicación, necesidad identificada, presupuesto, interacción previa y temporalidad. Este enfoque es **heurístico**, no un modelo predictivo validado. Las puntuaciones no prueban intención real de compra y no deben justificar decisiones discriminatorias o contactar personas sin autorización.
 
-```json
-{
-  "name": "Productora Viña Eventos",
-  "slug": "vina-eventos"
-}
-```
+## Riesgos que bloquean una comercialización
 
----
+1. **Autorización:** comprobar autenticación e aislamiento de cada tenant y cada recurso en todas las operaciones.
+2. **Canales:** consentimiento, opt-out, políticas publicitarias, presupuestos y aprobaciones antes de cualquier envío.
+3. **Persistencia:** migraciones versionadas, secretos y recuperaciones probadas; no usar `db push` como proceso de producción.
+4. **Resiliencia:** trabajos asíncronos idempotentes, reintentos acotados, control de cola y observabilidad.
+5. **Evidencia de producto:** pruebas automatizadas, entrevistas y mediciones reales de adopción/costos; evitar tasas de conversión inventadas.
+6. **Licencias:** el manifiesto declara MIT, pero conviene verificar la existencia de un archivo LICENSE y los derechos de dependencias o material de terceros antes de redistribuir.
 
-### 2. Offers & Campaign Generation
+## Roadmap y fuentes
 
-- `POST /api/tenants/:tenantId/offers`
+[Revisión de ingeniería](docs/ENGINEERING_ROADMAP_2026-11-04.md) · [Arquitectura y escalabilidad](docs/ARCHITECTURE_SCALABILITY_2026-11-04.md).
 
-  Ingests an offer and triggers asynchronous campaign creation.
-
-  **Payload:**
-
-```json
-{
-  "title": "Banquetería Matrimonial Premium",
-  "targetCity": "Viña del Mar",
-  "price": 45000,
-  "audience": "Parejas, Centros de Eventos",
-  "objective": "Generar cotizaciones"
-}
-```
-
-- `GET /api/tenants/:tenantId/campaigns`
-
-  Fetches all generated campaigns for the tenant.
-
----
-
-### 3. Opportunity Engine & Lead Scoring
-
-- `POST /api/tenants/:tenantId/leads`
-
-  Ingests a prospect, computes the weighted score, and assigns priority tier.
-
-  **Payload:**
-
-```json
-{
-  "companyName": "Hotel Mar del Plata Eventos",
-  "contactEmail": "gerencia@hotelmardelplata.cl",
-  "city": "Viña del Mar",
-  "industry": "Hotelería y Turismo",
-  "budget": 3500000,
-  "criteria": {
-    "industryMatch": true,
-    "locationMatch": true,
-    "needDetected": true,
-    "budgetQualified": true,
-    "priorEngagement": false,
-    "favorableTiming": true
-  }
-}
-```
-
-- `GET /api/tenants/:tenantId/leads`
-
-  Returns tenant leads ranked by score in descending order.
-
----
-
-## License
-
-MIT
+**Estado corporativo:** iniciativa técnica de MasterTech SpA sin ingresos, clientes o efectividad de campañas confirmados por este repositorio.
