@@ -1,7 +1,17 @@
-﻿node_modules/
+node_modules/
 .env
 packages/database/prisma/*.db
 packages/database/prisma/*.db-journal
 dist/
 .DS_Store
 Thumbs.db
+
+# Local configuration and generated test/build files
+.env.*
+!.env.example
+!.env.sample
+*.log
+coverage/
+__MACOSX/
+*.db-wal
+*.db-shm

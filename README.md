@@ -38,7 +38,7 @@ flowchart TD
 **Stack declarado:** Node.js, TypeScript/tsx, Express, Prisma con SQLite en el entorno de laboratorio y componentes de colas Redis/BullMQ. Las instrucciones existentes utilizan Node.js 24; fijar la versión y comprobar compatibilidad antes de integrarlo a CI.
 
 ```bash
-npm install
+npm ci
 npx prisma db push --schema=packages/database/prisma/schema.prisma
 npm run dev:api
 ```
@@ -77,3 +77,9 @@ La documentación histórica utiliza reglas ponderadas para industria, ubicació
 [Revisión de ingeniería](docs/ENGINEERING_REVIEW_2026-11-04.md) · [Arquitectura y escalabilidad](docs/ARCHITECTURE_SCALABILITY_2026-11-04.md).
 
 **Estado corporativo:** iniciativa técnica de MasterTech SpA sin ingresos, clientes o efectividad de campañas confirmados por este repositorio.
+
+
+## Fuentes y artefactos
+- `apps/api/`: API experimental; `apps/desktop/`: escritorio; `apps/web/`: frontend fuente al que apuntan las configuraciones Netlify y Vercel versionadas.
+- `dist-landing/`: exportación histórica/alternativa; no editar como segunda fuente. No eliminar ni regenerar hasta identificar sus consumidores y despliegues efectivos.
+- [Inventario y limpieza](docs/REPOSITORY_HYGIENE.md).
